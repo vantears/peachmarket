@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+    <definition name=".root" template="/WEB-INF/views/layout/baseLayout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/views/common/footer.jsp" />
+    </definition>
+    <definition name=".empty" template="/WEB-INF/views/layout/baseLayout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="header" value="" />
+        <put-attribute name="footer" value="" />
+    </definition>
+	<definition name="/chatsub/*" extends=".empty">  
+		<put-attribute name="mainheader" value="" />     
+      	<put-attribute name="body" value="/WEB-INF/views/chatsub/{1}.jsp" />
+    </definition>
+    <definition name="/admin/*" extends=".root" template="/WEB-INF/views/layout/baseLayout2.jsp">
+    	<put-attribute name="header" value="/WEB-INF/views/common/header.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/views/common/footer.jsp" />      
+      	<put-attribute name="adminheader" value="/WEB-INF/views/common/adminheader.jsp" />
+      	<put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
+    </definition>
+  	<definition name="/*/*" extends=".root">
+   		<put-attribute name="mainheader" value="/WEB-INF/views/common/mainheader.jsp" />      
+    	<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition>
+</tiles-definitions>

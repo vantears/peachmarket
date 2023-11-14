@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ph.peach.dao.ProfileDAO">
+	<select id="getProductsById" resultType="kr.ph.peach.vo.SaleBoardVO">
+    	SELECT * FROM sale_board WHERE sb_me_num = #{me_num} 
+    	<if test="state != 0">
+    		and sb_ss_num = #{state}
+    	</if>
+    	ORDER BY sb_date DESC
+    </select>
+	<update id="updateBoardViews" parameterType="kr.ph.peach.vo.SaleBoardVO">
+		UPDATE sale_board
+			SET sb_date = #{sb_date}
+		WHERE sb_num = #{sb_num}
+	</update>
+
+    <select id="getCategoriesByScNum" resultType="kr.ph.peach.vo.SaleCategoryVO">
+     	SELECT sale_category.sc_name, sale_category.sc_num
+		FROM sale_category
+		WHERE sc_num = #{sb_sc_num}
+    </select>
+    <update id="dateUp">
+    	update sale_board set sb_date = now() where sb_num = #{sb_num};
+    </update>
+    <delete id="deleteBoard">
+    	delete from sale_board where sb_num = #{sb_num};
+    </delete>
+  	<select id="selectAllCategory" resultType="kr.ph.peach.vo.CityVO">
+  		select * from city
+  	</select>
+  	<select id="selectLargeCategory" resultType="kr.ph.peach.vo.CityVO">
+  		select DISTINCT ci_large from city
+  	</select>
+  	<select id="selectMediumCategory" resultType="kr.ph.peach.vo.CityVO">
+  		select DISTINCT ci_medium from city
+  	</select>
+	<select id="selectMediumCity" resultType="CityVO">
+		SELECT distinct ci_medium FROM city where ci_large = #{large}
+	</select>
+	<select id="selectSmallCity" resultType="CityVO">
+		SELECT * FROM city where ci_medium = #{medium}
+	</select>
+  	<select id="selectLargeCity" resultType="CityVO">
+		SELECT distinct ci_large FROM city
+	</select>
+	<update id="updateUserId" parameterType="kr.ph.peach.vo.MemberVO">
+		UPDATE member SET me_nick = #{me_nick} WHERE me_num = #{me_num}
+	</update>
+
+	<update id="updateUserPw" parameterType="kr.ph.peach.vo.MemberVO">
+		UPDATE member SET me_pw = #{me_pw} WHERE me_num = #{me_num}
+	</update>
+	<update id="updateCity" parameterType="kr.ph.peach.vo.MemberVO">
+		UPDATE member SET me_ci_num = #{me_ci_num} WHERE me_num = #{user.me_num}
+	</update>
+	<update id="updateText" parameterType="kr.ph.peach.vo.ProfileVO">
+		UPDATE profile SET pf_text = #{pf_text} WHERE pf_me_num = #{user.me_num}
+	</update>
+	<select id="selectPfText" resultType="kr.ph.peach.vo.ProfileVO">
+  		select * from profile where pf_me_num = #{me_num}
+  	</select>
+	<select id="getPF" resultType="kr.ph.peach.vo.ProfileVO">
+  		select * from profile where pf_me_num = #{me_num}
+  	</select>
+	<update id="updateText2" parameterType="kr.ph.peach.vo.ProfileVO">
+		UPDATE profile SET pf_text = #{pf_text} WHERE pf_me_num = #{user.me_num}
+	</update>
+	<select id="selectPfNum" resultType="kr.ph.peach.vo.ProfileVO">
+		select pf_num from profile where pf_me_num = #{me_num}
+	</select>
+	<insert id="insertProfileFile">
+		insert into profile_image(pi_name,pi_pf_num) values(#{profileImage.pi_name},#{profileImage.pf_num})
+	</insert>
+	<select id="selectProfile" resultType="kr.ph.peach.vo.ProfileVO">
+		select * from profile where pf_me_num = #{me_num}
+	</select>
+	<select id="selectImg" resultType="kr.ph.peach.vo.ProfileImageVO">
+		select * from profile_image where pi_pf_num = #{pf_num}
+	</select>
+	<select id="selectIMG2" resultType="kr.ph.peach.vo.ProfileImageVO">
+		select pi_num from profile_image where pi_name = #{pi_name}
+	</select>
+	<delete id="deleteIMG">
+		delete from profile_image where pi_pf_num = #{pf_num}
+	</delete>
+	<insert id="addProfileNum" useGeneratedKeys="true" keyProperty="profile.pf_num">
+		insert into profile(pf_me_num) values(#{member.me_num})
+	</insert>
+ 
+</mapper>

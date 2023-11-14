@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ph.peach.dao.SaleCategoryDAO">
+
+	<resultMap type="kr.ph.peach.vo.SaleCategoryVO"
+		id="SaleCategoryVO">
+		<id property="sc_num" column="sc_num" />
+		<result property="sc_name" column="sc_name" />
+	</resultMap>
+
+
+
+
+	<!-- 이하 물품카테고리 관련 매퍼  -->
+	<select id="selectSaleCategoryList"
+		resultType="kr.ph.peach.vo.SaleCategoryVO">
+		select
+		*
+		from
+		sale_category
+	</select>
+	<!-- <select id="selectSaleCategoryById"
+		resultType="kr.ph.peach.vo.SaleCategoryVO">
+		select
+		*
+		from
+		sale_board
+		left join
+		sale_category
+		on
+		sb_sc_num =
+		sc_num
+		where
+		sb_ss_num = 1;
+	</select> -->
+	<insert id="insertSaleCategoryType" useGeneratedKeys="true"
+		keyProperty="sc.sc_num">
+		insert into sale_category(sc_name) values(#{sc.sc_name})
+	</insert>
+	<delete id="deleteSaleCategoryType">
+		delete from sale_category where sc_num = #{sc_num}
+	</delete>
+	<update id="updateSaleCategoryType">
+		update sale_category
+		set
+		sc_name = #{sc.sc_name}
+		where
+		sc_num = #{sc.sc_num}
+	</update>
+	<select id="selectupdateSaleCategoryTypeCountBySaleCategory"
+		resultType="int">
+		select count(*) from sale_board where sb_sc_num =
+		#{sb_sc_num}
+	</select>
+	<select id="selectSaleCategoryTypeCount" resultType="int">
+		select
+		count(*) from sale_category
+	</select>
+	
+	
+	
+	<!-- 이하 커뮤니티카테고리 관련 매퍼  -->
+	<select id="selectCommunityCategoryList"
+		resultType="kr.ph.peach.vo.CommunityCategoryVO">
+		select
+		*
+		from
+		community_category
+	</select>
+	<insert id="insertCommunityCategoryType" useGeneratedKeys="true"
+		keyProperty="cc.cc_num">
+		insert into community_category(cc_name) values(#{cc.cc_name})
+	</insert>
+	<delete id="deleteCommunityCategoryType">
+		delete from community_category where cc_num = #{cc_num}
+	</delete>
+	<update id="updateCommunityCategoryType">
+		update community_category
+		set
+		cc_name = #{cc.cc_name}
+		where
+		cc_num = #{cc.cc_num}
+	</update>
+	<select id="selectCommunityCategoryTypeCountByCommunityCategory"
+		resultType="int">
+		select count(*) from community where co_cc_num =
+		#{co_cc_num}
+	</select>
+	<select id="selectCommunityCategoryTypeCount" resultType="int">
+		select
+		count(*) from community_category
+	</select>
+</mapper>
+

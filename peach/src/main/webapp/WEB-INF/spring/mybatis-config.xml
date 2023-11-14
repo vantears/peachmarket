@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <typeAliases>
+  	<typeAlias type="kr.ph.peach.vo.MemberVO" alias="MemberVO"/>
+  	<typeAlias type="kr.ph.peach.vo.SaleBoardVO" alias="SaleBoardVO"/>
+  	<typeAlias type="kr.ph.peach.vo.SaleBoardVO" alias="SaleCategoryVO"/>
+  	<typeAlias type="kr.ph.peach.vo.ProfileVO" alias="ProfileVO"/>
+  	<typeAlias type="kr.ph.peach.vo.CityVO" alias="CityVO"/>
+  	<typeAlias type="kr.ph.peach.vo.BankVO" alias="BankVO"/>
+  </typeAliases>
+  
+</configuration>
