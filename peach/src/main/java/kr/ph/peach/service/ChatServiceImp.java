@@ -15,7 +15,7 @@ public class ChatServiceImp implements ChatService {
 
 	@Autowired
 	ChatDAO chatDao;
-	
+
 	@Override
 	public ChatVO selectChat(int sb_num, int me_num) {
 		if(sb_num == 0 || me_num == 0) {
@@ -31,7 +31,7 @@ public class ChatServiceImp implements ChatService {
 		}
 		int sel_me_num = chatDao.selectSelmenum(sb_num);
 		chatDao.insertChat(sb_num, me_num, sel_me_num);
-		
+
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class ChatServiceImp implements ChatService {
 			return;
 		}
 		chatDao.updateMessageRead(me_num, ch_num);
-		
+
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ChatServiceImp implements ChatService {
 		}
 		return chatDao.selectChatByChNum(ch_num);
 	}
-	
-	
+
+
 
 }

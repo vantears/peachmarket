@@ -20,7 +20,32 @@
 					<span class="tooltip-text">게시글로 이동</span>
 				</div>
 				</a>
-				<button id="openModalBtn" type="button" class="pay">피치페이</button>
+				<button id="openModalBtn" type="button" class="pay" data-num="${board.sb_num }">거래신청</button>
+					<div id="myModal" class="modal">
+						<div class="modal-content1">
+							<span class="close">&times;</span> <img class="modal-image"
+								width="30" height="34"
+								src="<c:url value='/resources/img/peachmark.png'/>">
+							<div class="modal-text1">피치마켓에서 중고거래 시작하기</div>
+							<div class="modal-text2">간편하게 상품을 확인하세요</div>
+							<div class="button-container">
+								<div class="rectangle-button red-button">
+									<button id="peachTrade2" type="button" onclick="tradePost()" class="trade" data-sbnum="${board.sb_num}" data-menum="${user.me_num}">직거래</button>
+								</div>
+								<div class="rectangle-button pink-button">
+									<button id="peachTrade" type="button" class="trade"
+										data-sb-num="${board.sb_num}" data-me-num="${user.me_num}">피치페이거래</button>
+								</div>
+							</div>
+							<div class="customer-center-container">
+								<p>
+									도움이 필요하면 <a href="daed124@naver.com">이메일</a> 또는 고객센터 <b>1611-7474</b>
+									로 문의 부탁드립니다. <br> 고객센터 운영시간: 09~18시 (점심시간 12~13시, 주말/공휴일
+									제외)
+								</p>
+							</div>
+						</div>
+					</div>
 			</div>
 			<div class="message-box">
 			<c:forEach items="${messageList }" var="message" varStatus="status">
@@ -59,4 +84,7 @@
 			</c:forEach>
 			</div>
 			</div>
+
+
+
 			

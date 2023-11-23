@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import kr.ph.peach.pagination.SaleBoardCriteria;
+import kr.ph.peach.vo.MemberVO;
 import kr.ph.peach.vo.SaleBoardVO;
-
 import kr.ph.peach.vo.SaleCategoryVO;
 import kr.ph.peach.vo.SaleImageVO;
 import kr.ph.peach.vo.WishVO;
@@ -16,12 +16,12 @@ public interface SaleBoardDAO {
 
 	boolean insertBoard(@Param("saleBoard")SaleBoardVO saleBoard);
 
-	List<SaleBoardVO> selectSaleBoardList(@Param("cri")SaleBoardCriteria cri);
-	
+	List<SaleBoardVO> selectSaleBoardList(@Param("cri")SaleBoardCriteria cri, @Param("user")MemberVO user);
+
 	List<SaleCategoryVO> selectAllCategory();
 
 	List<SaleBoardVO> selectAllBoard();
-	
+
 	List<SaleBoardVO> selectAllBoard2(@Param("cri")SaleBoardCriteria cri);
 
 	String selectMemberNickname(int sb_me_num);
@@ -33,7 +33,7 @@ public interface SaleBoardDAO {
 	int selectMemberSugar(int sb_me_num);
 
 	int getTotalCount(@Param("cri")SaleBoardCriteria cri);
-	
+
 	void updateBoard(@Param("board")SaleBoardVO board);
 
 	void deleteBoard(Integer sb_num);
@@ -52,10 +52,13 @@ public interface SaleBoardDAO {
 
 	List<SaleImageVO> selectFileList(@Param("si_table")String si_table, @Param("sb_num")Integer sb_num);
 
-	void deleteAllWish(Integer sb_num);
+	void deleteAllWish(@Param("sb_num")Integer sb_num);
 
-	SaleImageVO selectFile(Integer num);
+	SaleImageVO selectFile(@Param("num")Integer num);
 
-	void deleteFile(Integer num);
+	void deleteFile(@Param("num")Integer num);
 
+	void adminDeleteBoard(@Param("sb_num")Integer sb_num);
+	
+	void updateSaleboardTrade(@Param("rp_key")int rp_key);
 }

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ph.peach.dao.CommunityDAO">
+	<insert id="insertCommunity" keyProperty="community.co_num" useGeneratedKeys="true">
+    INSERT INTO community(co_title, co_info, co_me_num, co_cc_num)
+    VALUES (#{community.co_title}, #{community.co_info}, #{user.me_num}, #{cc_num})
+	</insert>
+    <select id="selectCCategory" resultType="kr.ph.peach.vo.CommunityCategoryVO">
+    	SELECT cc_name FROM community_category;
+    </select>
+    <select id="selectCICategory" resultType="int">
+    	SELECT cc_num FROM community_category where cc_name like #{CICategory};
+    </select>
+    <insert id="insertCommunityImage">
+		insert into community_image(ci_name, ci_ori_name, ci_co_num)
+		values(#{communityImage.ci_name},#{communityImage.ci_ori_name},#{communityImage.ci_co_num})
+	</insert>
+	<select id="selectBoardList" resultType="CommunityVO">
+		select * from community
+		left JOIN member ON community.co_me_num = member.me_num
+		join community_category on cc_num = co_cc_num
+		join city on me_ci_num = ci_num
+		where member.me_ci_num = #{user.me_ci_num}
+		<if test='cri.t == "all"'>
+		and 
+			(co_title like concat('%', #{cri.s}, '%')
+			or co_info like concat('%', #{cri.s}, '%')
+			or co_me_num like concat('%', #{cri.s}, '%'))
+		</if>
+		<if test='cri.t == "total"'>
+		and 
+			(co_title like concat('%', #{cri.s}, '%')
+			or co_info like concat('%', #{cri.s}, '%'))
+		</if>
+		<if test='cri.t == "writer"'>
+		
+        and  
+            member.me_nick like concat('%', #{cri.s}, '%')
+		</if>	
+	
+		<if test='cri.c != "선택"'>
+		and 
+			community_category.cc_name = #{cri.c}
+		</if>
+		
+		order by co_date DESC 
+		limit #{cri.pageStart}, #{cri.perPageNum}
+	</select>
+	<select id="selectMeNick" resultType="String">
+		select me_nick from member where me_num = ${list.co_me_num}
+	</select>
+	<select id="selectCountBoardList" resultType="int">
+		select count(*) from community
+		left JOIN member ON community.co_me_num = member.me_num
+		join community_category on cc_num = co_cc_num
+		join city on me_ci_num = ci_num
+		where member.me_ci_num = #{user.me_ci_num}
+		<if test='cri.t == "all"'>
+		and
+			(co_title like concat('%', #{cri.s}, '%')
+			or co_info like concat('%', #{cri.s}, '%')
+			or co_me_num like concat('%', #{cri.s}, '%'))
+		</if>
+		<if test='cri.t == "total"'>
+		and 
+			(co_title like concat('%', #{cri.s}, '%')
+			or co_info like concat('%', #{cri.s}, '%'))
+		</if>
+		<if test='cri.t == "writer"'>
+		and
+			(co_me_num like concat('%', #{cri.s}, '%'))
+		</if>
+	</select>
+	<select id="selectDetail" resultType="kr.ph.peach.vo.CommunityVO">
+		select * FROM community join community_category on co_cc_num = cc_num where co_num = ${co_num}
+	</select>
+	<select id="selectWriter" resultType="kr.ph.peach.vo.MemberVO">
+		select * FROM member where me_num = ${detail.co_me_num}
+	</select>
+	<insert id="insertReply">
+		insert into reply(re_info, re_co_num, re_me_num)
+			values(#{re_info},${co_num},${user.me_num}) 
+	</insert>
+	<select id="selectReply" resultType="kr.ph.peach.vo.ReplyVO">
+		select * FROM reply where re_co_num = ${co_num}
+	</select>
+	<select id="selectReNick" resultType="String">
+   		 SELECT me_nick FROM member WHERE me_num = #{reply.re_me_num}
+	</select>
+	<select id="getCoImg" resultType="kr.ph.peach.vo.CommunityImageVO">
+		select * FROM community_Image where ci_co_num = ${co_num}
+	</select>
+	<select id="selectEditCC" resultType="kr.ph.peach.vo.CommunityCategoryVO">
+		select * FROM community_category where cc_num = ${detail.co_cc_num}
+	</select>
+	<update id="updateCommunity">
+		update community set co_title = #{community.co_title},
+							co_cc_num = ${cc_num},
+							co_info = #{community.co_info}
+		where co_num = ${co_num}
+	</update>
+	<update id="updateCoView">
+		update community
+    		set co_views = co_views + 1
+   	    where co_num = #{co_num}
+	</update>
+	<update id="updateReply">
+	    update community
+	    	set co_reply = (select count(*) from reply where re_co_num = #{co_num})
+	    where co_num = #{co_num}
+	</update>
+	<update id="increaseLikeCount">
+	    UPDATE community
+	    SET co_like = co_like + 1
+    	WHERE co_num = #{coNum}
+	</update>
+	<insert id="insertLike">
+		insert into likes(lk_co_num, lk_me_num)
+		values(${co_num},${user.me_num})
+	</insert>
+	<select id="selectLkCoNum" resultType="kr.ph.peach.vo.LikesVO">
+		select lk_co_num FROM likes where lk_me_num = #{user.me_num} and lk_co_num = ${coNum}
+	</select>
+
+	<select id="getCcName" resultType="String">
+		select cc_name From community_category where cc_num = #{list.co_cc_num}
+	</select>
+	<delete id="deleteCom">
+		delete from community where co_num = #{co_num}
+	</delete>
+	<select id="selecteditImg" resultType="kr.ph.peach.vo.CommunityImageVO">
+		select * from community_image where ci_co_num = #{co_num}
+	</select>
+	<update id="updateCommunityImage">
+		update community_image set ci_name = #{communityImageVo.ci_name}, ci_ori_name = #{communityImageVo.ci_ori_name}
+			where ci_co_num = #{co_num}
+	</update>
+	<delete id="deleteComImg">
+		delete From community_image where ci_co_num = #{co_num}
+	</delete>
+	<delete id="replyDelete">
+		delete From reply where re_num = #{re_num}
+	</delete>
+	<select id="selectCommunityCategotyList" resultType="kr.ph.peach.vo.CommunityCategoryVO">
+		select * from community_category
+	</select>
+</mapper>

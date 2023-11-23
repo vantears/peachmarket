@@ -3,12 +3,33 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ph.peach.dao.ProfileDAO">
-	<select id="getProductsById" resultType="kr.ph.peach.vo.SaleBoardVO">
-    	SELECT * FROM sale_board WHERE sb_me_num = #{me_num} 
-    	<if test="state != 0">
-    		and sb_ss_num = #{state}
-    	</if>
-    	ORDER BY sb_date DESC
+	<resultMap type="kr.ph.peach.vo.SaleBoardVO" id="SaleBoardVO">
+		<id property="sb_num" column="sb_num"/>
+		<result property="sb_name" column="sb_name"/>
+		<result property="sb_price" column="sb_price"/>
+		<result property="sb_info" column="sb_info"/>
+		<result property="sb_date" column="sb_date"/>
+		<result property="sb_wish" column="sb_wish"/>
+		<result property="sb_me_num" column="sb_me_num"/>
+		<result property="sb_ss_num" column="sb_ss_num"/>
+		<result property="sb_sc_num" column="sb_sc_num"/>
+		<collection property="saleImageVOList" ofType="kr.ph.peach.vo.SaleImageVO" column="sb_num" select="selectSaleBoardImageList"/>
+		<collection property="saleCategoryVO" ofType="kr.ph.peach.vo.SaleCategoryVO" column="sb_sc_num" select="saleCategoryProduction"/>
+	</resultMap>
+    <select id="getProductsById" resultMap="SaleBoardVO">
+    SELECT *
+		FROM (
+		    SELECT *,
+		           ROW_NUMBER() OVER (PARTITION BY sb_num ORDER BY si_num) as row_num
+		    FROM sale_board
+		    LEFT JOIN sale_image ON sale_board.sb_num = sale_image.si_key
+		    WHERE sb_me_num = #{me_num}
+		    <if test="state != 0">
+		     AND sb_ss_num = #{state}
+		    </if>
+		) AS ranked
+		WHERE row_num = 1
+		ORDER BY sb_date DESC 
     </select>
 	<update id="updateBoardViews" parameterType="kr.ph.peach.vo.SaleBoardVO">
 		UPDATE sale_board
@@ -59,7 +80,7 @@
 		UPDATE profile SET pf_text = #{pf_text} WHERE pf_me_num = #{user.me_num}
 	</update>
 	<select id="selectPfText" resultType="kr.ph.peach.vo.ProfileVO">
-  		select * from profile where pf_me_num = #{me_num}
+  		select * from profile where pf_me_num = #{meNum}
   	</select>
 	<select id="getPF" resultType="kr.ph.peach.vo.ProfileVO">
   		select * from profile where pf_me_num = #{me_num}
@@ -88,5 +109,97 @@
 	<insert id="addProfileNum" useGeneratedKeys="true" keyProperty="profile.pf_num">
 		insert into profile(pf_me_num) values(#{member.me_num})
 	</insert>
- 
+ 	<select id="selectOriFile" resultType="kr.ph.peach.vo.ProfileImageVO">
+		select pi_num, pi_name, pi_pf_num from member join profile on me_num = pf_me_num join profile_image on pf_num = pi_pf_num where me_num = #{me_num};
+	</select>
+	<select id="getAccount" resultType="kr.ph.peach.vo.MemberVO">
+		select * from member where me_num = ${user.me_num} 
+	</select>
+	<update id="updateWithdraw" parameterType="kr.ph.peach.vo.MemberVO">
+		UPDATE member
+			SET me_point = #{PPoint}
+		WHERE me_num = ${user.me_num}
+	</update>
+	<select id="selectPoint" resultType="int">
+		select me_point from member where me_num = ${me_num};
+	</select>
+	<select id="selectBuy" resultMap="SaleBoardVO">
+    SELECT *
+	    FROM (
+	        SELECT *,
+	               ROW_NUMBER() OVER (PARTITION BY sb_num ORDER BY si_num) as row_num
+	        FROM trading
+	        JOIN trading_request ON tr_tq_num = tq_num
+	        JOIN sale_board ON tq_sb_num = sb_num
+	        JOIN member ON tq_me_num = me_num
+	        LEFT JOIN sale_image ON sb_num = si_key
+	        WHERE tq_me_num = #{me_num} AND tr_ts_state = '거래완료'
+	    ) AS ranked
+	    WHERE row_num = 1
+	    ORDER BY sb_date DESC;
+	</select>
+	<select id="selectSel" resultMap="SaleBoardVO">
+	SELECT *
+	    FROM (
+	        SELECT *,
+	               ROW_NUMBER() OVER (PARTITION BY sb_num ORDER BY si_num) as row_num
+		        FROM trading
+		        JOIN trading_request ON tr_tq_num = tq_num
+		        JOIN sale_board ON tq_sb_num = sb_num
+		        JOIN member ON sb_me_num = me_num
+		        LEFT JOIN sale_image ON sb_num = si_key
+		        WHERE sb_me_num = #{me_num} AND tr_ts_state = '거래완료'
+		    ) AS ranked
+		    WHERE row_num = 1
+		    ORDER BY sb_date DESC;
+	</select>
+	
+	<select id="selectProceeding" resultMap="SaleBoardVO">
+	SELECT *
+		FROM (
+			select *,
+				ROW_NUMBER() OVER (PARTITION BY sb_num ORDER BY si_num) as row_num
+			from trading join trading_request on tr_tq_num = tq_num 
+			join sale_board on tq_sb_num = sb_num
+			join member on sb_me_num = me_num
+			LEFT join sale_image on sb_num = si_key 
+			where (sb_me_num = #{me_num} or tq_me_num = #{me_num}) and tr_ts_state = '거래중' 
+			) AS ranked
+            WHERE row_num = 1
+			ORDER BY sb_date DESC;
+	</select>
+	<select id="getUserById" resultType="kr.ph.peach.vo.MemberVO">
+		select * from member where me_id = #{me_id}
+	</select>
+	<select id="selectUserCity" resultType="kr.ph.peach.vo.CityVO">
+		select * from city where ci_num = #{me_ci_num}
+	</select>
+	<insert id="insertReport">
+		insert into sugar_list(sl_sugar, sl_me_num, sl_sb_num) values(#{sugarList.sl_sugar}, #{user.me_num},
+		#{sugarList.sl_sb_num})
+	</insert>
+	<select id="selectSugar" resultType="kr.ph.peach.vo.SugarListVO">
+		SELECT * FROM sugar_list where sl_me_num = #{user.me_num} and sl_sb_num = #{sugarList.sl_sb_num};
+	</select>
+	<select id="selectSaleBoardImageList" resultType="kr.ph.peach.vo.SaleImageVO">
+		select * from sale_image where si_key = #{sb_num} and si_table = "sale_board"
+	</select>
+	<select id="saleCategoryProduction" resultType="kr.ph.peach.vo.SaleCategoryVO">
+		select * from sale_category where sc_num = #{sb_sc_num}
+	</select>
+	<select id="selectTrTqNum" resultType="Int">
+		select tq_num from trading_request where tq_sb_num = #{sb_num}
+	</select>
+	<select id="selectSugarContent" resultType="Integer">
+		SELECT AVG(sl_sugar)
+			FROM peach.sugar_list
+		    JOIN sale_board ON sl_sb_num = sb_num
+		    WHERE sb_me_num = #{meNum};
+	</select>
+	<update id="updateSugar">
+		update member set me_sugar = #{sugarContent} where me_num = #{meNum}
+	</update>	
+	<select id="selectSellUser" resultType="int">
+		select sb_me_num from sale_board where sb_num = #{sugarList.sl_sb_num}
+	</select>
 </mapper>

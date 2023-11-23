@@ -70,7 +70,7 @@ public class SSEController {
         }
     }
 
- // 특정 방의 모든 Emitter에 알림을 보내는 메서드입니다.
+    // 특정 방의 모든 Emitter에 알림을 보내는 메서드입니다.
     private void notifyEmitters(Integer roomId, Consumer<ChatEmitter> action) {
         List<ChatEmitter> emitters = chatEmitters.get(roomId);
         if (emitters != null) {

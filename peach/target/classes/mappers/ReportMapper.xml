@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.ph.peach.dao.ReportDAO">
-	<insert id="insertReport">
-		insert into report(rp_date, rp_info, rp_me_num, rp_table, rp_key) values(#{reportVo.date}, #{reportVo.info}, #{reportVo.me_num}, #{reportVo.table}, #{reportVo.key})
-	</insert>
-</mapper>

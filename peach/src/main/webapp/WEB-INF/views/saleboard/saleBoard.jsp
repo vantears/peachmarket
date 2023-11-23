@@ -10,10 +10,18 @@
 	<div class="wrapper">
 		<div class="category-name">${categoryName }</div>
 		<div class="containerboard">
-			<c:if test="${prList.size() != 0 }">
-			
-			<%-- forEach를 통해 판매상품 리스트를 컨트롤러에서 가져와서 출력 --%>
-			<c:forEach items="${prList}" var="pr">
+			<c:choose>
+	            <c:when test="${empty prList}">
+	            	<div class="message-container">
+	            		<div class="empty-space">
+	            		</div>
+	            		<img class="no-items-img" width="100px" height="100px" src="<c:url value='/img/RESISTX.gif'/>">
+	                	<p class="no-items-message">등록된 상품이 없습니다.</p>
+	            	</div>
+	            </c:when>
+	            <c:otherwise>
+					<%-- forEach를 통해 판매상품 리스트를 컨트롤러에서 가져와서 출력 --%>
+					<c:forEach items="${prList}" var="pr">
 					<div class="item-main-holder">
 					<%-- a태그를 통해 해당 상품 번호의 상세정보로 경로 전달 --%>
 					<a href="<c:url value='/saleboard/detail?sb_num=${pr.sb_num}' />" class="item-holder">
@@ -34,7 +42,7 @@
 							<div class="wish-name">
 								<div class="price-holder">
 									${pr.get_sb_price()}
-								</div>			
+								</div>				
 								<div class="wish">
 									<img src="<c:url value="/resources/image/wish-small.png"/>"> <span style="font-size:14px;">${pr.sb_wish}</span>
 								</div>
@@ -48,15 +56,14 @@
 								${pr.get_date()}
 							</div>
 						</div>
+						<div class="city-text">
+									${pr.memberVO.cityVO.ci_small}
+						</div>	
 					</a>
 				</div>			
 				</c:forEach>
-				</c:if>
-				<c:if test="${prList.size() == 0 }">
-					<div class="no-posts">
-						해당 카테고리에 아직 등록된 게시글이 없습니다.
-					</div>
-				</c:if>
+				</c:otherwise>
+			</c:choose>
 		</div>
 	</div>
     	<!-- 댓글 페이지네이션 -->
@@ -88,6 +95,24 @@
 	</ul>	
 </body>
 	<style>
+		.empty-space{
+			height: 300px;
+		}
+        .message-container {
+        	width: 100%;
+			height: 800px;
+           text-align: center;
+           padding: 20px;
+        }
+        .no-items-img{
+        	flex: 0 0 196px;
+        }
+        .no-items-message {
+        	
+            font-size: 20px;
+            color: #555;
+            margin: 10px 0;
+        }
 		::before, ::after {
 			box-sizing: border-box;
 		}
@@ -235,6 +260,16 @@
 			text-align: center;
 			margin-top: 20px;
 			margin-left: 12px;
+		}
+		.city-text {
+			text-align: center;
+			font-size: 14px;
+			font-weight: 400;
+			color: #888888;
+			padding-bottom: 10px;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
 		}
 	</style>
 </html>

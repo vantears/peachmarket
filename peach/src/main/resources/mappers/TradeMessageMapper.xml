@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ph.peach.dao.TradeMessageDAO">
+	<insert id="rejectMessageToCustomer">
+		insert into trade_message(tm_info, tm_date, tm_sb_num, tm_me_num)
+		values('거래가 거절되었습니다.', NOW(), #{trv.tq_sb_num}, #{trv.tq_me_num})
+	</insert>
+	<select id="getTradeMessageList" resultType="kr.ph.peach.vo.TradeMessageVO">
+		select * from trade_message where tm_me_num = #{user.me_num}
+	</select>
+	<delete id="confirmPost">
+		delete from trade_message where tm_num = #{tm_num}
+	</delete>
+	<insert id="acceptMessageToCustomer">
+		insert into trade_message(tm_info, tm_date, tm_sb_num, tm_me_num)
+		values('거래가 수락되었습니다. 마이페이지에서 확인하세요', NOW(), #{trv.tq_sb_num}, #{trv.tq_me_num})
+	</insert>
+</mapper>

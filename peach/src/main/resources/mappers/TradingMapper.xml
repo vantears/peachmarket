@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ph.peach.dao.TradingDAO">
+
+	<select id="gettradingList" resultType="kr.ph.peach.vo.TradingVO">
+		select * from trading limit #{cri.pageStart}, #{cri.perPageNum}
+	</select>
+	<select id="getSelectTypeList" resultType="kr.ph.peach.vo.TradingStateVO">
+		select * from trading_state;
+	</select>
+</mapper>

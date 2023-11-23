@@ -52,7 +52,9 @@
 			</div>
 		</div>
 	</footer>
+
 	<!--/ End Footer Area -->
+
 
 </div>
 <style>

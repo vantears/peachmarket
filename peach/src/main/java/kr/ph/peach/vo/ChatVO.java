@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ChatVO {
-	private int ch_num, ch_sb_num, ch_me_num;
-	private String ch_seller_nickname, ch_buyer_nickname, ch_sb_name, ch_last_date;
+	private int ch_num, ch_sb_num, ch_me_num, ch_sel_me_num;
+	private String ch_seller_nickname, ch_buyer_nickname, ch_sb_name, ch_last_date, pi_name;
 	private int unreadCount;
-	
+
 	List<MessageVO> messageVO;
-	
+
 	public String get_last_date() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime dateTime = LocalDateTime.parse(ch_last_date, formatter);
@@ -24,7 +24,7 @@ public class ChatVO {
 		Duration duration = Duration.between(dateTime, nowTime);
 		long diff = duration.getSeconds();
 		String standard = "";
-						
+
 		if(diff > 31103999) {
 			diff = diff/31104000;
 			standard = "년 전";
@@ -43,12 +43,12 @@ public class ChatVO {
 		} else if(diff > 59) {
 			diff = diff/60;
 			standard = "분 전";
-			
+
 		} else {
 			String finalDate = "방금 전";
 			return finalDate;
 		}
-		
+
 		String finalDate = diff+standard;
 		return finalDate;
 	}

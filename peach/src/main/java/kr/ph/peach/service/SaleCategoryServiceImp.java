@@ -17,10 +17,10 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 
 	@Autowired
 	SaleCategoryDAO saleCategoryDao;
-  
+
 	@Autowired
 	MemberDAO memberDao;
-	
+
 	@Override
 	public List<SaleCategoryVO> getSaleCategoryList() {
 		return saleCategoryDao.selectSaleCategoryList();
@@ -28,22 +28,22 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 	}
 	@Override
 	public List<StatementVO> getMemberTypeList(MemberVO user) {
-		
+
 		return memberDao.selectMemberTypeList();
 	}
 
 	@Override
 	public List<CommunityCategoryVO> getCommunityCategoryList() {
-		
+
 		return saleCategoryDao.selectCommunityCategoryList();
 	}
-	
-	
+
+
 	/*
 	 * 물품 카테고리 관련
-	 * 
+	 *
 	 * */
-	
+
 
 	@Override
 	public boolean insertSaleCategoryType(SaleCategoryVO saleCategory) {
@@ -67,7 +67,7 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 		if(saleCategory == null) {
 			return false;
 		}
-		//등록된 게시글이 있는지 확인 
+		//등록된 게시글이 있는지 확인
 		int count = saleCategoryDao.selectupdateSaleCategoryTypeCountBySaleCategory(saleCategory.getSc_num());
 		//있으면 삭제 실패
 		if(count != 0) {
@@ -75,8 +75,8 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 		}
 		//등록된 게시판 타입이 몇개 있는지 확인
 		int scCount = saleCategoryDao.selectSaleCategoryTypeCount();
-		
-		//1개 있으면 삭제 실패 
+
+		//1개 있으면 삭제 실패
 		if(scCount == 1) {
 			return false;
 		}
@@ -96,12 +96,12 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 		}
 	}
 
-	
-	
+
+
 	/*
 	 * 커뮤니티 카테고리 관련
 	 * */
-	
+
 	@Override
 	public boolean insertCommunityCategoryType(CommunityCategoryVO communityCategory) {
 		if(communityCategory == null || communityCategory.getCc_name() == null) {
@@ -124,7 +124,7 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 		if(communityCategory == null) {
 			return false;
 		}
-		//등록된 게시글이 있는지 확인 
+		//등록된 게시글이 있는지 확인
 		int count = saleCategoryDao.selectCommunityCategoryTypeCountByCommunityCategory(communityCategory.getCc_num());
 		//있으면 삭제 실패
 		if(count != 0) {
@@ -132,8 +132,8 @@ public class SaleCategoryServiceImp implements SaleCategoryService{
 		}
 		//등록된 게시판 타입이 몇개 있는지 확인
 		int ccCount = saleCategoryDao.selectCommunityCategoryTypeCount();
-		
-		//1개 있으면 삭제 실패 
+
+		//1개 있으면 삭제 실패
 		if(ccCount == 1) {
 			return false;
 		}

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,25 +36,25 @@ import kr.ph.peach.vo.WishVO;
 @Controller
 @RequestMapping("/saleboard")
 public class SaleBoardController {
-	
+
 	@Autowired
 	MemberService memberService;
 
 	@Autowired
 	SaleBoardService saleBoardService;
-	
+
 	@Autowired
 	SaleCategoryService saleCategoryService;
-	
+
 	@Autowired
 	TradingRequestService tradingRequestService;
-	
+
 	//메인페이지 API
 	@GetMapping("/{sc_num}")
 	public String productsList(@PathVariable("sc_num") int categoryId, Model model, HttpSession session, SaleBoardCriteria cri) {
-		List<SaleBoardVO> prList = saleBoardService.getSaleBoardList(cri);
-		List<SaleCategoryVO> categoryList = saleCategoryService.getSaleCategoryList();
 		MemberVO user = (MemberVO) session.getAttribute("user");
+		List<SaleBoardVO> prList = saleBoardService.getSaleBoardList(cri, user);
+		List<SaleCategoryVO> categoryList = saleCategoryService.getSaleCategoryList();
 		if (user != null) {
 			List<WishVO> wishList = memberService.getWishList(user.getMe_num());
 			model.addAttribute("wishList", wishList);
@@ -64,12 +64,16 @@ public class SaleBoardController {
 		}
 		String categoryName = "전체보기";
 		if(categoryId > 0) {
-			categoryName = categoryList.get(categoryId - 1).getSc_name();			
+			for(SaleCategoryVO tmp : categoryList) {
+				if(tmp.getSc_num() == categoryId) {
+					categoryName = tmp.getSc_name();
+				}
+			}
 		}
 		cri.setSc_num(categoryId);
-		//전체 게시글 수 
+		//전체 게시글 수
 		int totalCount = saleBoardService.getTotalCount(cri);
-		//페이지네이션에서 최대 페이지 개수 
+		//페이지네이션에서 최대 페이지 개수
 		int displayPageNum = 20;
 		PageMaker pm = new PageMaker(displayPageNum, cri, totalCount);
 		model.addAttribute("categoryName", categoryName);
@@ -79,7 +83,7 @@ public class SaleBoardController {
 		model.addAttribute("categoryList", categoryList);
 		return "/saleboard/saleBoard";
 	}
-	
+
 	//중고거래 게시글 페이지 불러오기
 	@GetMapping("/insert")
 	public String insert(Model model, HttpSession session, SaleBoardVO saleBoard) {
@@ -87,17 +91,25 @@ public class SaleBoardController {
 		List<SaleCategoryVO> dbCategory = saleBoardService.selectAllCategory();
 		model.addAttribute("dbCategory", dbCategory);
 		MemberVO user = (MemberVO)session.getAttribute("user");
-		//유저가 없으면 로그인 필요 메시지 보낸 
+		//유저가 없으면 로그인 필요 메시지 보낸
 		Message msg;
+		
+		 if (user != null) {
+				List<WishVO> wishList = memberService.getWishList(user.getMe_num());
+				model.addAttribute("wishList", wishList);
+			}
+	    List<SaleCategoryVO> categoryList = saleCategoryService.getSaleCategoryList();
+		model.addAttribute("categoryList", categoryList);
+		
 		if(user == null) {
-			msg = new Message("member/login", "로그인이 필요합니다.");
+			msg = new Message("saleboard/" + saleBoard.getSb_sc_num(), "로그인이 필요합니다.");
 			model.addAttribute("msg", msg);
 			return "message";
 		}
-		
+
 		return "/saleboard/insert";
 	}
-	
+
 	//중고거래 게시글 페이지 제출
 	@PostMapping("/insert")
 	public String insertPost(Model model, SaleBoardVO saleBoard, HttpSession session, MultipartFile[] files) {
@@ -109,15 +121,24 @@ public class SaleBoardController {
 		} else {
 			msg = new Message("saleboard/insert", "게시물 등록에 실패했습니다.");
 		}
+		//System.out.println(files);
 		model.addAttribute("msg", msg);
 		return "message";
 	}
-	
+
+
 	//검색 시 나오는 검색결과 페이지
 	@GetMapping("/list")
 	public String list(Model model, SaleBoardCriteria cri, HttpSession session) {
 		List<SaleBoardVO> dbBoardList = saleBoardService.selectAllBoard2(cri);
-		
+		MemberVO user = (MemberVO) session.getAttribute("user");
+		List<SaleCategoryVO> categoryList = saleCategoryService.getSaleCategoryList();
+		if (user != null) {
+			List<WishVO> wishList = memberService.getWishList(user.getMe_num());
+			model.addAttribute("wishList", wishList);
+		}
+		model.addAttribute("categoryList", categoryList);
+
 		for(SaleBoardVO tmp : dbBoardList) {
 			//객체의 회원번호로 회원 닉네임을 가져온 후 해당 객체의 닉네임에 저장(db에서 게시물이 회원번호만 외래키로 가지고 있고 닉네임 정보는 가져와야함)
 			dbBoardList.get(dbBoardList.indexOf(tmp)).setSb_me_nickname(saleBoardService.selectMemberNickname(tmp.getSb_me_num()));
@@ -127,11 +148,11 @@ public class SaleBoardController {
 		PageMaker pm = new PageMaker(displayPageNum, cri, totalCount);
 
 		model.addAttribute("pm", pm);
-		
+
 		model.addAttribute("dbBoardList", dbBoardList);
 		return "/saleboard/list";
 	}
-	
+
 	//중고거래 게시물 상세페이지
 	@GetMapping("/detail")
 	public String detail(Model model, Integer sb_num, HttpSession session) {
@@ -147,8 +168,15 @@ public class SaleBoardController {
 		board.setSb_me_nickname(saleBoardService.selectMemberNickname(board.getSb_me_num()));
 		board.setSb_sc_name(saleBoardService.selectCategoryName(board.getSb_sc_num()));
 		board.setSb_me_sugar(saleBoardService.selectMemberSugar(board.getSb_me_num()));
+		List<SaleCategoryVO> categoryList = saleCategoryService.getSaleCategoryList();
+		if (user != null) {
+			List<WishVO> wishList = memberService.getWishList(user.getMe_num());
+			model.addAttribute("wishList", wishList);
+		}
+		model.addAttribute("categoryList", categoryList);
+
 		if(user != null && board != null) {
-			WishVO dbWish = saleBoardService.selectWish(user.getMe_num(), board.getSb_num());			
+			WishVO dbWish = saleBoardService.selectWish(user.getMe_num(), board.getSb_num());
 			int wishCheck = 0;
 			if(dbWish == null) {
 				wishCheck = 0;
@@ -160,9 +188,9 @@ public class SaleBoardController {
 		model.addAttribute("board", board);
 		model.addAttribute("user", user);
 		return "/saleboard/detail";
-		
+
 	}
-	
+
 	//중고거래 게시물 수정 페이지 불러오기
 	@GetMapping("/update")
 	public String update(Model model, HttpSession session, Integer sb_num) {
@@ -174,15 +202,21 @@ public class SaleBoardController {
 		board.setSb_sc_name(saleBoardService.selectCategoryName(board.getSb_sc_num()));
 		MemberVO user = (MemberVO)session.getAttribute("user");
 		if(user == null || board == null || user.getMe_num() != board.getSb_me_num()) {
-			Message msg = new Message("saleboard/detail?sb_num=" + sb_num, "잘못된 접근입니다.");
+			Message msg = new Message("saleboard/" + board.getSb_sc_num(), "잘못된 접근입니다.");
 			model.addAttribute("msg", msg);
 			return "message";
 		}
+		 if (user != null) {
+				List<WishVO> wishList = memberService.getWishList(user.getMe_num());
+				model.addAttribute("wishList", wishList);
+			}
+	    List<SaleCategoryVO> categoryList = saleCategoryService.getSaleCategoryList();
+		model.addAttribute("categoryList", categoryList);
 		model.addAttribute("board", board);
-		
+
 		return "/saleboard/update";
 	}
-	
+
 	//중고거래 게시물 수정 페이지 제출
 	@PostMapping("/update")
 	public String updatePost(Model model, HttpSession session, SaleBoardVO board, MultipartFile[] files,Integer[] delFiles) {
@@ -191,12 +225,12 @@ public class SaleBoardController {
 		if(saleBoardService.updateBoard(board, user, files, delFiles)) {
 			msg = new Message("/saleboard/detail?sb_num="+board.getSb_num(), "수정되었습니다.");
 		}else {
-			msg = new Message("/saleboard/update?sb_num="+board.getSb_num(), "수정을 실패하였습니다."); 
+			msg = new Message("/saleboard/update?sb_num="+board.getSb_num(), "수정을 실패하였습니다.");
 		}
 		model.addAttribute("msg", msg);
 		return "message";
 	}
-	
+
 	//중고거래 게시물 삭제 페이지
 	@GetMapping("/delete")
 	public String delete(Integer sb_num, HttpSession session, Model model, SaleBoardVO saleBoard) {
@@ -212,12 +246,12 @@ public class SaleBoardController {
 		model.addAttribute("msg", msg);
 		return "message";
 	}
-	
+
 	//중고거래 게시물 찜 눌렀을 때 ajax로 처리
 	@ResponseBody
 	@PostMapping("/wish")
 	public Map<String, Object> ajaxTest(@RequestBody WishVO wish){
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		//찜 상태를 0으로 초기화하고 db에 찜 내역이 없다면 찜을 추가하고 찜 상태를 1로, 찜 내역이 있다면 찜을 삭제하고 찜 상태를 0으로 반환한다.
 		WishVO dbWish = saleBoardService.selectWish(wish.getWi_me_num(), wish.getWi_sb_num());
 		int isWish = 0;
@@ -233,23 +267,85 @@ public class SaleBoardController {
 		map.put("board", board);
 		return map;
 	}
-	
+
 	//거래 요청 시 ajax로 불러오는 페이지
 	@ResponseBody
 	@PostMapping("/detail")
 	public Map<String, Object> tradePost(@RequestBody TradingRequestVO tradingRequest, HttpSession session) {
 	    Map<String, Object> map = new HashMap<>();
         boolean trade = tradingRequestService.tradePost(tradingRequest.getTq_sb_num(), tradingRequest.getTq_me_num());
-        System.out.println(trade);
         if (trade) {
 	        map.put("status", "success");
-	        map.put("message", "직거래를 요청하였습니다.");
+	        map.put("message", "거래를 요청하였습니다.");
 	    } else {
 	        map.put("status", "error");
-	        map.put("message", "이미 직거래를 신청한 물품입니다.");
+	        map.put("message", "이미 거래를 신청한 물품입니다.");
 	    }
-
-	    System.out.println(map);
 	    return map;
 	}
+
+	@ResponseBody
+	@GetMapping("/peachTrade")
+	public Map<String, Object> getPeachTrade(Integer sb_num, HttpSession session) {
+		Map<String, Object> map = new HashMap<>();
+		MemberVO user = (MemberVO)session.getAttribute("user");
+		SaleBoardVO saleBoard = saleBoardService.selectBoard(sb_num);
+		if (user != null) {
+			// 사용자의 ID를 이용해서 DB에서 새로운 맴버 정보를 가져온다
+			MemberVO refreshedUser = memberService.getMemberById(user.getMe_num());
+
+			// 가져온 정보를 세션에 업데이트한다
+			session.setAttribute("user", refreshedUser);
+
+			// 반환할 맵에 정보 추가
+			map.put("user", refreshedUser);
+			map.put("message", "맴버 정보가 성공적으로 갱신되었습니다.");
+		} else {
+			// 로그인되지 않은 경우
+			map.put("message", "로그인이 필요합니다.");
+		}
+		user = (MemberVO)session.getAttribute("user");
+		map.put("saleBoard", saleBoard);
+        return map;
+
+	}
+
+	@ResponseBody
+	@PostMapping("/peachTrade")
+	public Map<String, Object> postPeachTrade(@RequestParam("sb_num") int sb_num, HttpSession session) {
+		Map<String, Object> map = new HashMap<>();
+		MemberVO user = (MemberVO)session.getAttribute("user");
+		boolean trade = tradingRequestService.getTradingRequestPeach(user, sb_num);
+		map.put("trade", trade);
+        return map;
+
+	}
+
+	@ResponseBody
+	@PostMapping("/reducePoint")
+	public Map<String, Object> reducePoint(@RequestParam("me_num") int me_num, @RequestParam("me_point") int me_point, @RequestParam("pp_point") int pp_point, HttpSession session) {
+		Map<String, Object> map = new HashMap<>();
+		tradingRequestService.reducePoint(me_num, me_point);
+		memberService.reducePointHistory(me_num, pp_point);
+        return map;
+
+	}
+
+	@ResponseBody
+	@PostMapping("/addPoints")
+	public Map<String, Object> addPoints(@RequestParam("me_num") int me_num, @RequestParam("paidAmount") int paidAmount, HttpSession session) {
+		Map<String, Object> map = new HashMap<>();
+		memberService.addPoints(me_num, paidAmount);
+		memberService.addPointHistory(me_num, paidAmount);
+	    MemberVO updatedUser = memberService.getMemberById(me_num);
+
+	    // 세션에 업데이트된 회원 정보 저장
+	    session.setAttribute("user", updatedUser);
+
+	    // 반환할 map에 성공 및 업데이트된 사용자 정보 추가
+	    map.put("updatedUser", updatedUser);
+        return map;
+
+	}
+
 }

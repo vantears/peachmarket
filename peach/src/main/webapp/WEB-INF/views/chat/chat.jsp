@@ -6,6 +6,122 @@
 <head>
 	<title>스프링</title>
 <style>
+	.modal {
+		display: none;
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+	
+	.modal-content1 {
+		background-color: rgb(247, 247, 247);
+		margin: 15% auto;
+		border: 1px solid #888;
+		width: 420px;
+		height: 506px;
+	}
+	
+	.modal-image {
+		display: block;
+		margin: 30px auto;
+		border-style: none;
+	}
+	
+	.modal-text1 {
+		font-size: 20px;
+		line-height: 1.5;
+		margin-bottom: 15px;
+		text-align: center;
+		font-weight: bold;
+	}
+	
+	.modal-text2 {
+		line-height: 1.5;
+		margin-bottom: 35px;
+		text-align: center;
+	}
+	
+	.button-container {
+		display: flex;
+		flex-direction: column;
+		margin-top: 35px;
+		margin-bottom: 20px;
+	}
+	
+	.rectangle-button {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	
+	.red-button button, .pink-button button {
+		border: none;
+		padding: 10px 0;
+		cursor: pointer;
+		font-size: 16px;
+		color: white;
+		font-weight: bold;
+		width: 280px; /* 버튼 길이 */
+		height: 38px; /* 버튼 높이 */
+		transition: background-color 0.3s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px; /* 버튼의 모서리를 부드럽게 설정 */
+	}
+	
+	.red-button button {
+		background-color: red; /* 빨간색 배경색 */
+		margin-bottom: 10px;
+	}
+	
+	.pink-button button {
+		background-color: pink; /* 분홍색 배경색 */
+	}
+	
+	/* 호버 효과 */
+	.red-button button:hover {
+		opacity: 0.8;
+	}
+	
+	.pink-button button:hover {
+		opacity: 0.8;
+	}
+	
+	.customer-center-container {
+		padding: 3.5rem 2rem 1.5rem;
+		font-size: 12px;
+		line-height: 1.5;
+		color: rgb(153, 153, 153);
+	}
+	
+	.customer-center-container p {
+		width: 100%;
+		border-top: 1px solid rgb(229, 229, 229);
+		padding-top: 1rem;
+		font-size: 12px;
+	}
+	
+	.close {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		cursor: pointer;
+		font-size: 24px;
+	}
+	
+	.close:hover, .close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
 	body, html {
 	    height: 100%;
 	    margin: 0;
@@ -314,6 +430,12 @@
 			</div>
 		</div>
 	</div>
+	<!-- jQuery -->
+	<script type="text/javascript"
+		src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<!-- iamport.payment.js -->
+	<script type="text/javascript"
+		src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
 	<script type="text/javascript">
 			
 			// 채팅방 번호인 ch_num은 전역변수로 선언하여 기능들이 수행 될 때마다 선택된 채팅방 번호의 값으로 바꿔주어 현재 접속중인 채팅방 번호를 알 수 있게 함.
@@ -575,13 +697,12 @@
 					// 이 함수로 메세지 내용을 가져올때마다 스크롤를 맨아래로 가게 한다.
 					$(".message-area-list").scrollTop($(".message-area-list")[0].scrollHeight);
 					
-
+					paymodal();
 				},
 				error : function() {
 					alert('잘못된 접근 입니다.');
 				}
 			});
-			
 		
 		}
 		
@@ -622,8 +743,7 @@
 				});
 			}
 			
-		}
-		
+		}	
 		
 		$(document).ready(function(){
 			// 게시글을 통해서 들어온 경우 해당 게시글에 대한 채팅 내역이 바로 선택되며 메시지도 바로 불러옴
@@ -635,6 +755,174 @@
 			}
 		});
 	
+		
+		function tradePost() {
+			var tq_sb_num = document.querySelector('#peachTrade2').dataset.sbnum;
+	        var tq_me_num = '${user.me_num}';
+		    fetch('/peach/saleboard/detail?sb_num=' + sb_num, {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json'
+		        },
+		        body: JSON.stringify({
+		        	tq_sb_num: tq_sb_num,
+		        	tq_me_num: tq_me_num
+		        })
+		    })
+		    .then(response => {
+		    	return response.json();	
+		    }).then(json => {
+		    	alert(json.message);
+		    })
+		    .catch(error => {
+		        console.error("로그인이 필요합니다:", error);
+		        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+		        window.location.href = '/peach/member/login';
+		    });
+		}
+		
+		//거래
+		function paymodal(){			
+
+			// 모달 열기 버튼
+			const openModalBtn = document.getElementById("openModalBtn");
+	
+			// 모달 요소
+			const modal = document.getElementById("myModal");
+				
+				// 모달 열기 버튼 클릭 시 이벤트
+				openModalBtn.addEventListener("click", function() {
+					if('${user.me_id}' == '') {
+						//alert('로그인한 회원만 이용이 가능합니다.');
+						if(confirm('로그인하시겠습니까?')){
+							location.href = '<c:url value="/member/login"/>'
+						}
+						return;
+					}
+				 	modal.style.display = "block";
+				});
+		
+				// 모달 닫기 버튼 또는 바깥 영역 클릭 시 모달 닫기
+				const closeModal = document.querySelector(".close");
+				window.addEventListener("click", function(event) {
+				  if (event.target === modal) {
+				    modal.style.display = "none";
+				  }
+				});
+		
+				closeModal.addEventListener("click", function() {
+				  modal.style.display = "none";
+				});
+				
+
+		
+			//피치페이 거래
+			$(document).ready(function() {
+			    $('#peachTrade').on('click', function() {		    	
+			        var sb_num = $(this).data('sb-num');
+			        var me_num = $(this).data('me-num');
+			
+			        $.ajax({
+			            method: 'GET',
+			            url: '<c:url value="/saleboard/peachTrade"/>',
+			            data: { sb_num: sb_num },
+			            success: function(map) {
+			            	console.log(map)
+			                var userPoints = map.user.me_point;
+			                var productPrice = map.saleBoard.sb_price;
+			
+			                $('#userPoints').text(userPoints);
+			                $('#productPrice').text(productPrice);
+			
+			                if (userPoints >= productPrice) {
+			                    $.ajax({
+			                        method: 'POST',
+			                        url: '<c:url value="/saleboard/peachTrade"/>',
+			                        data: { sb_num: sb_num },
+			                        success: function(map) {
+			                            if (map.trade) {
+			                                console.log('거래가 성공적으로 처리되었습니다.');
+			                                alert('거래가 성공적으로 처리되었습니다.');
+			                                
+			                                var updatedPoints = userPoints - productPrice;
+			                                $.ajax({
+			                                    method: 'POST',
+			                                    url: '<c:url value="/saleboard/reducePoint"/>', // 사용자 포인트 감소를 처리하는 엔드포인트
+			                                    data: { me_num: me_num, me_point: updatedPoints,  pp_point: productPrice },
+			                                    success: function(response) {
+			                                        console.log('포인트가 감소되었습니다.');
+			                                    }
+			                                });  
+			                            } else {
+			                                console.log('이미 직거래를 신청한 물품입니다.');
+			                                alert('이미 직거래를 신청한 물품입니다.');
+			                            }
+			                        }
+			                    });
+			                } else {
+			                    if (confirm('포인트가 부족합니다. 추가 결제를 진행하시겠습니까?')) {
+			                        var IMP = window.IMP; 
+			                        IMP.init("imp41345184"); 
+			                        var inputAmount = map.saleBoard.sb_price - map.user.me_point; // 사용자가 입력한 결제할 금액 (임의로 '1111'로 설정)
+			                        var minimumAmount = '1111'; // 최소 결제 금액 (예시로 5000원으로 설정)
+	
+			                        if (parseInt(inputAmount) < minimumAmount) {
+			                            // 최소 결제 금액 미만인 경우 최소 금액으로 설정
+			                            inputAmount = minimumAmount.toString();
+			                            alert('최소 결제 금액 이하입니다. 최소 금액(' + minimumAmount + '원)으로 결제합니다.');
+			                        }
+		                            IMP.request_pay({
+		                                pg : 'danal_tpay',
+		                                pay_method : 'card',
+		                                merchant_uid: 'merchant_' + new Date().getTime(), 
+		                                name : map.saleBoard.sb_name,
+		                                amount : inputAmount,
+		                                buyer_email : map.user.me_id,
+		                                buyer_name : map.user.me_name,
+		                                buyer_tel : map.user.me_phone,
+		                            }, function (rsp) { // callback
+		                                //rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.
+		                            	if(rsp.success) {
+		                                    console.log("결제가 성공했습니다.");
+		                                    console.log("결제한 금액:", rsp.paid_amount); // 실제 결제된 금액
+		                                    // me_point에 결제된 금액을 추가하는 요청을 서버로 보냄
+		                                    $.ajax({
+		                                    	async: false,//비동기는 이렇게
+		                                        type: 'POST',
+		                                        url: '/peach/saleboard/addPoints', // 해당 엔드포인트는 서버에서 처리하고 me_point를 업데이트하는 데 사용
+		                                        data: { 
+		                                        	paidAmount: rsp.paid_amount,
+		                                        	me_num: map.user.me_num
+		                                        },
+		                                        success: function (data) {
+		                                            //console.log('서버 응답:', data); // Check the server response in the console
+		                                            alert('포인트가 충전되었습니다.');
+		                                        },
+		                                        error: function () {
+		                                            console.error('포인트 충전에 실패했습니다.');
+		                                            // 실패시 처리
+		                                        }
+		                                    });
+		                            	} else {
+		                            		console.log(rsp);
+		                            	}            	
+		                            });		                        
+			                    } else {
+			                        // 사용자가 '취소'를 선택한 경우
+			                        console.log('추가 결제가 취소되었습니다.');
+			                        // 원하는 작업 수행 (예: 다른 동작 수행 또는 경고창 등)
+			                    }
+			                }
+			            },
+			            error: function(error) {
+			                console.log('데이터를 불러오는 중 오류가 발생했습니다.');
+			                // 오류 발생 시 추가 작업 수행
+			            }
+			        });
+			    });
+			});
+			
+		}
 	</script>
 </body>
 </html>

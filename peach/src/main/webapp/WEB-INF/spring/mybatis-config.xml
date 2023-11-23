@@ -10,6 +10,10 @@
   	<typeAlias type="kr.ph.peach.vo.ProfileVO" alias="ProfileVO"/>
   	<typeAlias type="kr.ph.peach.vo.CityVO" alias="CityVO"/>
   	<typeAlias type="kr.ph.peach.vo.BankVO" alias="BankVO"/>
+  	<typeAlias type="kr.ph.peach.vo.ProfileImageVO" alias="ProfileImageVO"/>
+  	<typeAlias type="kr.ph.peach.vo.CommunityVO" alias="CommunityVO"/>
+  	<typeAlias type="kr.ph.peach.vo.CommunityCategoryVO" alias="CommunityCategoryVO"/>
+  	<typeAlias type="kr.ph.peach.vo.ReplyVO" alias="ReplyVO"/>
   </typeAliases>
   
 </configuration>

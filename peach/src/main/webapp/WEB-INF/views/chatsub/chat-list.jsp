@@ -10,8 +10,14 @@
 			<c:when test="${chat.ch_me_num == user.me_num}">
 				<div class="chat-room chat-room${chat.ch_num }" id="sbNum${chat.ch_sb_num }" chNum="${chat.ch_num }">
 						<div class="prifle-pic">
-							<img src="<c:url value='/resources/image/NoMainImage.png'/>">
+							<c:if test="${chat.pi_name == null}">
+							  	<img src="<c:url value='/resources/image/NoMainImage.png'/>" class="example">
+							</c:if>
+							<c:if test="${chat.pi_name != null}">
+							  	<img src="<c:url value='/resources/image/${chat.pi_name}'/>" class="example">
+							</c:if>
 						</div>
+						
 						<div class="chat-name">
 							<div class="chat-title">
 								${chat.ch_seller_nickname}
@@ -35,7 +41,12 @@
 			<c:otherwise>
 				<div class="chat-room chat-room${chat.ch_num }" id="sbNum${chat.ch_sb_num }" chNum="${chat.ch_num }">
 						<div class="prifle-pic">
-							<img src="<c:url value='/resources/image/NoMainImage.png'/>">
+							<c:if test="${chat.pi_name == null}">
+							  	<img src="<c:url value='/resources/image/NoMainImage.png'/>" class="example">
+							</c:if>
+							<c:if test="${chat.pi_name != null}">
+							  	<img src="<c:url value='/resources/image/${chat.pi_name}'/>" class="example">
+							</c:if>
 						</div>
 						<div class="chat-name">
 							<div class="chat-title">

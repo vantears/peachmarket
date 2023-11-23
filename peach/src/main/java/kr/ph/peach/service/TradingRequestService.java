@@ -7,7 +7,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 
 import kr.ph.peach.vo.MemberVO;
-import kr.ph.peach.vo.SaleBoardVO;
 import kr.ph.peach.vo.TradingRequestVO;
 
 public interface TradingRequestService {
@@ -29,4 +28,21 @@ public interface TradingRequestService {
 	void changeTradingCuState(int tq_num);
 
 	void changeTradingSeState(int tq_num);
+
+	boolean getTradingRequestPeach(MemberVO user, int sb_num);
+
+	void reducePoint(int me_num, int me_point);
+
+	void addPointToCustomer(int tq_num);
+
+	void reducePointToCustomer(int tq_num);
+
+	void changeTradingSeStateCancel(int tq_num);
+
+	void changeTradingCuStateCancel(int tq_num);
+
+	TradingRequestVO getTradingRequestThat(int tq_num);
+	
+	List<TradingRequestVO> getTradingRequestsList();
+
 }

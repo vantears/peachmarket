@@ -20,7 +20,7 @@
 	<section class="hero-area">
 		<div class="container admin">
 			<div class="row">
-				<h1>물품 카테고리 관리</h1>
+				
 				<div class="input-group mb-3 mt-3">
 					<div class="input-group-prepend">
 						<select class="form-control" id="authority">
@@ -115,23 +115,5 @@
 			</div>
 		</div>
 	</section>
-
-
-
-
-
-	<!-- <div class="container admin box-main">
-		<nav class="admin-nav">
-			<ul>
-				<li><h2>1. 회원관리</h2></li>
-				<li>2. 카테고리 추가 제거</li>
-				<li>3. 신고기능관리</li>
-			</ul>
-		</nav>
-		<div class="admin-content">
-		내용확인
-		</div>
-	</div> -->
-
 </body>
 </html>

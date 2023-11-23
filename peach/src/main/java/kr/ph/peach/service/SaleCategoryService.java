@@ -10,7 +10,7 @@ import kr.ph.peach.vo.StatementVO;
 public interface SaleCategoryService {
 
 	List<SaleCategoryVO> getSaleCategoryList();
-	
+
 	List<StatementVO> getMemberTypeList(MemberVO user);
 
 	List<CommunityCategoryVO> getCommunityCategoryList();

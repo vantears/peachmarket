@@ -66,12 +66,16 @@
 	display: flex;
 	margin-top: -5px;
 }
+.table_body {
+	min-height: 400px;
+}
 </style>
 </head>
 <body>
 	<section class="hero-area">
 		<div class="container admin">
 			<div class="row">
+			<div class="table_body">
 				<h2>회원관리</h2>
 				<table class="table">
 					<thead style="height: 50px">
@@ -128,7 +132,7 @@
 						</tbody>
 					</c:forEach>
 				</table>
-
+				</div>
 				<div class="admin-search">
 					<form action="" method="get" class="admin-search-bar">
 						<div class="form-group">

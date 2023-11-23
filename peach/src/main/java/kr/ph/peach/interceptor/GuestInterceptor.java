@@ -8,7 +8,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class GuestInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, 
+	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler)
 			throws Exception {
 		//세션에 회원 정보가 없으면 메인 페이지로 이동
@@ -21,8 +21,8 @@ public class GuestInterceptor extends HandlerInterceptorAdapter {
 			//기존에 가려던 URL은 방문하지 않고 메인으로 이동
 			return false;
 		}
-		//로그인 했으면 기존에 가려던 URL을 방문해서 작업 
+		//로그인 했으면 기존에 가려던 URL을 방문해서 작업
 		return true;
 	}
-	
+
 }

@@ -10,5 +10,5 @@ public class SaleCategoryVO {
 
 	private int sc_num;
 	private String sc_name;
-	
+
 }

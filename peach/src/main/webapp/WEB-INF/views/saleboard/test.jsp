@@ -15,7 +15,14 @@
 					<%-- a태그를 통해 해당 상품 번호의 상세정보로 경로 전달 --%>
 					<a href="<c:url value='/saleboard/detail?sb_num=${pr.sb_num}' />" class="item-holder">
 						<div class="image-holder">
-							<img class="item" width="100%" height="194" src="<c:url value='/img/${pr.saleImageVOList.size() != 0 ? pr.saleImageVOList.get(0).si_name :\"\" }'/>">
+							<c:choose>
+								<c:when test="${pr.saleImageVOList.size() != 0 }">
+									<img class="item" width="100%" height="194" src="<c:url value='/resources/image/${pr.saleImageVOList.size() != 0 ? pr.saleImageVOList.get(0).si_name :\"\" }'/>">
+								</c:when>
+								<c:otherwise>
+									<img class="item" width="100%" height="194" src="<c:url value='/resources/image/NoMainImage.png'/>">
+								</c:otherwise>
+							</c:choose>
 						</div>
 						<div class="text-holder">
 							<div class="wish-name">
@@ -27,7 +34,7 @@
 								</div>				
 							</div>
 							<div class="price-holder">
-								${pr.get_sb_price(pr.sb_price)}
+								${pr.get_sb_price()}
 							</div>
 						</div>
 						<div class="profile-date">
@@ -96,6 +103,7 @@
 			border: 1px solid rgb(238, 238, 238);
 			background: rgb(255, 255, 255);
 			display: block;
+			max-width: 196px;
 		}
 		a {
 		color: rgb(33, 33, 33);
@@ -121,6 +129,11 @@
 		}
 		.wish {
 			color: grey;
+			text-align: left;
+			min-width: 30px;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
 		}
 		.title {
 			position: relative;

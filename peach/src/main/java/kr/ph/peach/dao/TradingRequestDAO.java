@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.ui.Model;
 
 import kr.ph.peach.vo.MemberVO;
-import kr.ph.peach.vo.SaleBoardVO;
 import kr.ph.peach.vo.TradingRequestVO;
 
 public interface TradingRequestDAO {
@@ -31,5 +30,25 @@ public interface TradingRequestDAO {
 
 	void changeTradingSeState(@Param("tq_num")int tq_num);
 
+	boolean getTradingRequestPeach(@Param("user")MemberVO user, @Param("sb_num")int sb_num);
 
+	void reducePoint(@Param("me_num")int me_num, @Param("me_point")int me_point);
+
+	void addPointToCustomer(@Param("tq_num")int tq_num);
+
+	void reducePointToCustomer(@Param("tq_num")int tq_num);
+
+	void changeTradingSeStateCancel(@Param("tq_num")int tq_num);
+
+	void changeTradingCuStateCancel(@Param("tq_num")int tq_num);
+
+	void changeTrTqState(@Param("tq_num")int tq_num);
+
+	TradingRequestVO getTradingRequestThat(@Param("tq_num")int tq_num);
+
+	/* void deleteTradingRequest(@Param("tq_num")int tq_num); */
+
+	List<TradingRequestVO> getTradingNowList();
+	
+	boolean deleteTradeReportNum(@Param("rp_key")int rp_key);
 }

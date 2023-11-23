@@ -5,9 +5,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script
+   src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script
+   src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<style>
+	.form-group{
+		border: 1px solid #f76076;
+		border-radius: 5px;
+	}
+	.btn{
+		background-color: #f76076;
+		width: 100%;
+	}
+</style>
 </head>
 
 <body class="bg-gradient-primary">
@@ -18,7 +34,7 @@
         <div class="card o-hidden border-0 shadow-lg my-5">
           <div class="card-body p-0">
             <div class="row">
-              <div class="col-lg-6 d-none d-lg-block bg-password-image"></div>
+             <div class="col-lg-6 d-none d-lg-block bg-password-image"><img style="width: 100%; margin-top: 150px" src="<c:url value='/img/피치.png'/>"></div>
               <div class="col-lg-6">
                 <div class="p-5">
                   <div class="text-center">
@@ -31,7 +47,7 @@
                   <div class="form-group">
                     <input type="email" class="form-control form-control-user" id="me_phone" name="me_phone" placeholder="전화번호를 입력하세요.">
                   </div>
-                  <a href="javascript:void(0)" onclick="fnSubmit(); return false;" class="btn btn-primary btn-user btn-block">ID 찾기</a>
+                  <a href="javascript:void(0)" onclick="fnSubmit(); return false;" class="btn">ID 찾기</a>
                   <hr>
                   <div class="text-center">
                     <a class="small" href="<c:url value='/member/signup'/>">계정 만들기!</a>
@@ -59,7 +75,7 @@ $(document).ready(function() {
 });
 
 function fnSubmit() {
-  var name_rule = /^[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,}$/;
+  var name_rule = /^[가-힣]{2,}$/;
   var phone_rule = /^(\+8210\d{4}\d{4}|010\d{4}\d{4})$/;
 
   if ($("#me_name").val() == null || $("#me_name").val() == "") {

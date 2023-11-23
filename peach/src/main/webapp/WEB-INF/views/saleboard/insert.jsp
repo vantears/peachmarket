@@ -259,7 +259,8 @@
 		<input type="file" class="real-upload" accept="image/*" onchange="addFile(this);" id="no0" name="files" multiple>
 		<div class="form-group">
 			<label class="content-title">제목</label>
-			<input type="text" class="form-control" name="sb_name" placeholder="상품명을 입력해주세요." required>
+			<input type="text" maxlength="40" class="form-control" name="sb_name" placeholder="상품명을 입력해주세요.(최대 40자)" required>
+			
 		</div>
 		<div class="form-group">
 			<label class="content-category">카테고리</label>

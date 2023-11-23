@@ -66,100 +66,85 @@
 	display: flex;
 	margin-top: -5px;
 }
+
+.flex-box {
+	display: flex;
+	border: none;
+}
+
+.btn-white-delete {
+	background-color: #fff;
+	border: none;
+}
+.table_body {
+	min-height: 400px;
+}
 </style>
 </head>
 <body>
 	<section class="hero-area">
 		<div class="container admin">
 			<div class="row">
-				<h2>거래신고관리</h2>
+				<div class="table_body">
 				<table class="table">
 					<thead style="height: 50px">
 						<tr>
-							<th>회원 번호</th>
-							<th>ID</th>
-							<th>이름</th>
-							<th>전화번호</th>
-							<th>닉네임</th>
-							<th>포인트</th>
-							<th>권한</th>
-							<th>가입날짜</th>
-							<th>당도</th>
-							<th>계정상태</th>
-							<th>지역(대분류)</th>
-							<th>은행</th>
-							<th>수정</th>
-
+							<th>신고 번호</th>
+							<th>신고 날짜</th>
+							<th>신고자 닉네임</th>
+							<th>거래상태</th>
+							<th>거래상태전환</th>
+							<th>신고 사유 보기</th>
+							<th>신고 삭제</th>
 						</tr>
 					</thead>
-					<c:forEach items="${mbList}" var="mbList">
-						<tbody>
-							<tr>
-								<td>${mbList.me_num}</td>
-								<td>${mbList.me_id}</td>
-								<td>${mbList.me_name}</td>
-								<td>${mbList.me_phone}</td>
-								<td>${mbList.me_nick}</td>
-								<td>${mbList.me_point}</td>
-								<td>${mbList.me_au}</td>
-								<td>${mbList.me_date}</td>
-								<td>${mbList.me_sugar}</td>
-								<td>${mbList.statementVO.st_name}</td>
-								<td>${mbList.cityVO.ci_large}</td>
-								<td>${mbList.bankVO.bk_name}</td>
-								<td><div class="btnWrap">
-										<button type="button" class="popupBtn">수정하기</button>
+					<c:forEach items="${report}" var="report">
+						<c:if test="${report.rp_table == '3'}">
+							<tbody>
+								<tr>
+									<td>${report.rp_num}</td>
+									<td>${report.rp_date}</td>
+									<td>${report.memberVO.me_nick}</td>
+									<td><c:forEach items="${trList }" var="tr">
+											<c:if test="${report.rp_key == tr.tq_sb_num }">${tr.tradingVO.tr_ts_state}</c:if>
+										</c:forEach></td>
+									<td>									
+										<div class="btnWrap">
+										<button onclick="deleteTradeReport(${report.rp_key})" class="popupBtn">거래상태전환</button>
 									</div>
-									<div class="modalWrap">
-										<div class="modalBody">
-											<span class="closeBtn"></span>
-											<form action="<c:url value='/admin/manager'/>" method="post">
-												<input type="hidden" name="me_num" value="${mbList.me_num}">
-												<select class="form-control" name="me_st_num">
-													<c:forEach items="${StateTypeList}" var="List">
-														<option value="${List.st_num }">${List.st_name }</option>
-													</c:forEach>
-												</select>
-												<button>완료</button>
-											</form>
+									</td>
+									<td>
+										<div class="btnWrap">
+											<button type="button" class="popupBtn">신고내용보기</button>
 										</div>
-									</div></td>
-							</tr>
-						</tbody>
+										<div class="modalWrap">
+											<div class="modalBody">
+												<span class="closeBtn"></span> ${report.rp_info }
+											</div>
+										</div>
+									</td>
+									<td><button onclick="deleteReport(${report.rp_num})"
+											class="btn-white-delete">신고 삭제</button></td>
+								</tr>
+							</tbody>
+						</c:if>
 					</c:forEach>
 				</table>
-
+				</div>
 				<div class="admin-search">
 					<form action="" method="get" class="admin-search-bar">
-						<div class="form-group">
-							<select class="form-control" name="authority">
-								<option value="0"
-									<c:if test="${pm.cri.authority == '0' }">selected</c:if>
-									>전체</option>
-								<option value="admin"
-									<c:if test="${pm.cri.authority == 'admin' }">selected</c:if>
-									>관리자</option>
-								<option value="user"
-									<c:if test="${pm.cri.authority == 'user' }">selected</c:if>
-									>회원</option>
-							</select>
-						</div>
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
 								<select class="form-control" name="type">
 									<option value="0"
 										<c:if test="${pm.cri.type == '0' }">selected</c:if>>전체</option>
-									<option value="me_num"
-										<c:if test="${pm.cri.type == 'me_num' }">selected</c:if>>회원번호</option>
-									<option value="me_name"
-										<c:if test="${pm.cri.type == 'me_name' }">selected</c:if>>이름</option>
 									<option value="me_nick"
 										<c:if test="${pm.cri.type == 'me_nick' }">selected</c:if>>닉네임</option>
-									<option value="me_au"
-										<c:if test="${pm.cri.type == 'me_au' }">selected</c:if>>권한</option>
-									<option value="bo_contents"
-										<c:if test="${pm.cri.type == 'bo_contents' }">selected</c:if>>내용</option>
-
+									<option value="rp_key"
+										<c:if test="${pm.cri.type == 'rp_key' }">selected</c:if>>게시판
+										번호</option>
+									<option value="rp_info"
+										<c:if test="${pm.cri.type == 'rp_info' }">selected</c:if>>내용</option>
 								</select>
 							</div>
 							<input type="text" class="form-control" name="search"
@@ -207,8 +192,43 @@
 				$(this).hide()
 			}
 		})
+		function deleteTradeReport(rp_key){
+			if(confirm("거래상태를 취소하시겠습니까??")){
+		  		let rp = {
+		  				rp_key : rp_key
+		  		}
+		  		ajaxJsonToJson(false, "post", "/admin/report/tradedelete", rp, (data)=>{
+		  			if(data.res){
+		  				alert('거래가 취소되었습니다')
+			  			location.reload();
+		  			}else{
+		  				alert('거래취소 실패')
+		  			}
+		  		})
+			}else{
+				alert("삭제 취소")
+			}
+		}
+		
+		function deleteReport(rp_num){
+			if(confirm("삭제하시겠습니까??")){
+		  		let rp = {
+		  				rp_num : rp_num
+		  		}
+		  		ajaxJsonToJson(false, "post", "/admin/report/delete", rp, (data)=>{
+		  			if(data.res){
+		  				alert('삭제 성공')
+			  			location.reload();
+		  			}else{
+		  				alert('삭제 실패')
+		  			}
+		  		})
+			}else{
+				alert("삭제 취소")
+			}
+  	}
+		
 
-	
 	</script>
 
 </body>

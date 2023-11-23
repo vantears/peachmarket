@@ -3,7 +3,56 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ph.peach.dao.ReportDAO">
+	<resultMap type="kr.ph.peach.vo.ReportVO" id="ReportVO">
+		<id property="rp_num" column="rp_num" />
+		<result property="rp_date" column="rp_date" />
+		<result property="rp_info" column="rp_info" />
+		<result property="rp_me_num" column="rp_me_num" />
+		<result property="rp_table" column="rp_table" />
+		<result property="rp_key" column="rp_key" />
+		<collection property="memberVO"
+			ofType="kr.ph.peach.vo.MemberVO" column="rp_me_num"
+			select="selectMemberList" />
+
+	</resultMap>
+
 	<insert id="insertReport">
-		insert into report(rp_date, rp_info, rp_me_num, rp_table, rp_key) values(#{reportVo.date}, #{reportVo.info}, #{reportVo.me_num}, #{reportVo.table}, #{reportVo.key})
+		insert into report(rp_date, rp_info, rp_me_num,
+		rp_table, rp_key) values(#{reportVo.rp_date}, #{reportVo.rp_info},
+		#{reportVo.rp_me_num}, #{reportVo.rp_table}, #{reportVo.rp_key})
 	</insert>
+	<select id="getreportList" resultMap="ReportVO">
+		select * from report join member on me_num = rp_me_num
+		where 1 = 1
+		<choose>
+			<when test='cri.type == "0"'>
+				and (rp_num like concat('%', #{cri.search}, '%')
+				or
+				me_nick like concat('%', #{cri.search}, '%')
+				or
+				rp_key like
+				concat('%', #{cri.search}, '%')
+				or
+				rp_info like concat('%',
+				#{cri.search}, '%'))
+			</when>
+			<otherwise>
+				and ${cri.type} like concat('%', #{cri.search}, '%')
+			</otherwise>
+		</choose>
+		limit
+		#{cri.pageStart}, #{cri.perPageNum}
+	</select>
+	<select id="selectMemberList"
+		resultType="kr.ph.peach.vo.MemberVO">
+		select * from member where me_num = #{rp_me_num}
+
+	</select>
+	<delete id="deleteReportNum">
+		delete from report where rp_num = #{rp_num}
+	</delete>
+	<select id="getTotalCount" resultType="int">
+		select count(*) from
+		report
+	</select>
 </mapper>

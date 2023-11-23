@@ -7,26 +7,26 @@
 	<title>마이페이지 관리</title>
 </head>
 <style>
-	.insert-container {
+	.insert-container1 {
 		width: 1100px;
 		margin: auto;
 		margin-top: 20px;
 		margin-bottom: 20px;
 	}
 	
- 	li {
+ 	.upload {
       list-style: none;
       position: relative;
     }
-
-    img {
+	.image-list {
+	  list-style: none;
+      position: relative;
+	}
+    .pImg {
       width: 200px;
       height: 200px;
 		
     }
-	close {
-	
-	}
     .real-upload {
       display: none;
     }
@@ -49,11 +49,10 @@
 	    height: 1.5rem;
 	    background-position: center center;
 	    background-repeat: no-repeat;
-	    background-size: 12px 12px;
-	    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDEyIDEyIj4KICAgIDxwYXRoIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0iZXZlbm9kZCIKICAgICAgICBkPSJNNi44NDggNmwzLjc3Ni0zLjc3NmEuNi42IDAgMSAwLS44NDgtLjg0OEw2IDUuMTUgMi4yMjQgMS4zNzZhLjYuNiAwIDAgMC0uODQ4Ljg0OEw1LjE1MiA2IDEuMzc2IDkuNzc1YS42LjYgMCAxIDAgLjg0OC44NDlMNiA2Ljg0OGwzLjc3NiAzLjc3NmEuNTk4LjU5OCAwIDAgMCAxLjAyNC0uNDI1LjYuNiAwIDAgMC0uMTc2LS40MjRMNi44NDggNnoiIC8+Cjwvc3ZnPg==);
-	    background-color: rgb(25, 25, 25);
-	    opacity: 0.3;
+	    background-size: 40px 40px;
+	    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEsElEQVR4nO1azY/bRBSfCrEtgoKAG5QL0EuB/wF2l/JVaHvIhY/My7ZaiUIOy+Y9r9gukXqsSqHloxWquKEV/w6FqmcKFLQElUNmHGlhqucYkjj22E5sJwvzkyxF8njG7/n93meEcHBwcHBwcHBwcKgERrYP9MB7Tjdayz54x/ni372V9Wf5nvivwTSb+7v11kkl8aqSdFNJ/EsDmbiL7wVrgK50JZ4wtfaC2KtQ8METGvATLamTJHDqxc9Kutg9TYfEXoFZ9R5SgJcUYG9iwaOWwXtJumjeaj4o5hka6CUN+EtRgsdYxM8a6EUxbzBC7NOA52z8Lswa2E8AtflMMQ8wtdo9SuLXZQseQ4trfPZshRdi3+TC4+9K0nW++PfESpilJWjAczn4+yM7Rw3eIofG6F6cA2iJSwroMq/NQYmPZiS8t6iAdjMIvqMAvTwx3ayu3qslrmZxqIHfqbeOlittBByOMnl7id+Yt9fvFxPCnGk/oAG3M1jCT2YFD4qqoCR9aucm/a0APyyCn30/Q5u8Z4qyPxZVoHuaDqUlOSx80ecqwLN2KpDfra89XvS5ub9+YPaRL+8DHuYE5s6ptUdECngNr9WnNp6OyTW2Z2oFptncn5Lb32beDj/DXvrfBElSxwd8NWl/vqcB//jHuSlJWyPnr+BBDfSbLbSWWkB1662T1i/Q8N6NCHQ4mh2yqfoNPDYmfAOP8b0YD//U8Dotvfds7+DX8Y3SFKAkXrXFeQ5fIy9bbx1N4uuwEuKEHyi1tRwTIm9ZwuKXJSqAbloc36VYPidQJlCC9F7jK1F4SZ07b248PP4e+JnlPW6UIryprd1nL3a8xSReJ0UNFjxJ+EBBCf6CrSJZAbQbl2lOjR63sSxx39bOCkw8R38gyU8Mfwzb8706PVO4ArTEJQv/d9Kfb72sAHWq8IC9LI7MGo2k97woGj43L5Mdz3dZ9khTQlbhGf0qssJI4FsVQNcz7VGnVwpTAOD3lSpA2ynQmVb4ESWAdzz1fcKEqTIK9P7vTtDI9gFrGJS4VFkY5Fqh6jCYngjRZRHBn+9sPJpkqlMlQoCfW6znB1EWFNCVmafCtfYCN0AsCviiNAV0JZ6w8xfPFF4MNTaeHF6ngd63vYMP3uulKcCw9q0JCP46Xg7TVq5yONy/3//Hs+OtOEs5LGmn9Hmi5nmf3Qq2ow0RLmnZlOP4HAWvCZxcpAwOGyLfpkSQC6KSlphM4OvAzDeLPpctaS5aYgweVKY2RSVtFtgU3UptigKdn/aszAi42B9UmlQ6TNGuDtvvaWbPvudW1PeUDl3HFzINRngExoORHMnJYDBCt9P2Dx3sbCbGCqidroDBVwo6OY3WMqeyselto7UcJjmJcX6cbqORolIY5ifgtcxKGA1ZHa7ogqpuwn+RKMCvZib8yHh8UiVMcbHwMx+PR8bkg/5/qYLT7kzN3oawWZmZv/lpw+3w+Obr3MD0pzcX0pKlnObOjZTzlYe6acBZGc/qJv33R+god1iZ3RV8TOxVmFp7gXt0XKby0MKWO4T8vsFruarb03+UTAInRH5j/QhzmRXDV/C7sX6ktE6Og4ODg4ODg4ODg4jiLpmvCJ7Nw3tkAAAAAElFTkSuQmCC");
 	    border-radius: 50%;
+	    background-color: #fff;
 	    position: absolute;
 	    top: 0.5rem;
 	    right: 0.5rem;
@@ -83,16 +82,16 @@
 	<h1 class="qwe">마이페이지 관리</h1>
 
 	<br>
-	<div class="insert-container">
+	<div class="insert-container1">
 		<div class="wrapper">
-				<ul class="image-preview">
+				<ul class="image-preview mb-3">
 				<c:if test="${pi_num == ''}">
 				<li class="upload" style="background-image:url('<c:url value='/resources/image/upload.png' />')"></li>
 				</c:if>
 					<c:if test="${pi_num != ''}">
 						<li class="upload" style="background-image:url('<c:url value='/resources/image/upload.png' />'); display: none;"></li>
 						<li class="image-list" id="file0">
-							<img alt="" src="<c:url value='/img/${pi_num}' />" >
+							<img class="pImg" alt="" src="<c:url value='/img/${OriFileName}' />" >
 							<button class="close-btn" type="button" onclick="deleteOriginal(0)"></button>
 						</li>
 					</c:if>
@@ -105,17 +104,18 @@
 			      
 			      const li = document.createElement('li');
 			      const close = document.createElement('button');
-			      const img = document.createElement('img');
+			      const pImg = document.createElement('img');
 			      li.setAttribute('class', 'image-list');
 			      li.setAttribute('id', "file" + fileNo)
-			      img.setAttribute('src', e.target.result);
-			      img.setAttribute('data-file', file.name);
+			      pImg.setAttribute('src', e.target.result);
+			      pImg.setAttribute('data-file', file.name);
+			      pImg.setAttribute('class', 'pImg');
 			      close.setAttribute('class', 'close-btn');
 			      close.setAttribute('type', 'button');
 			      close.setAttribute('onclick', 'deleteFile('+fileNo+')')
 
 			      
-			      li.appendChild(img);
+			      li.appendChild(pImg);
 			      li.appendChild(close);
 			      
 			      fileNo++;
@@ -233,7 +233,12 @@
 		</div>
 		<div class="form-group-e">
 			<label>비밀번호</label>
-			<input type="password" class="form-control" name="me_pw" value="${user.me_pw}" placeholder="변경할 비밀번호를 입력하세요.">
+			<input type="password" class="form-control" name="me_pw" placeholder="변경할 비밀번호를 입력하세요.">
+		<p>*비밀번호는 영문,숫자,특수문자를 사용하여 8~20자이내에 작성.</p>
+		</div>
+		<div class="form-group-e">
+			<label>비밀번호 확인</label>
+			<input type="password" class="form-control" name="me_pwr" placeholder="변경할 비밀번호를 입력하세요.">
 		</div>
 		<br>
 		<div class="form-group-e">
@@ -243,7 +248,9 @@
 			<div class="form-group">
 				<label>시/도</label>
 				<select name="large" class="form-control">
-					<option value="0">시/도 선택</option>
+					<c:if test="${not empty userCity.ci_large}">
+						<option selected>${userCity.ci_large}/${userCity.ci_medium}/${userCity.ci_small}</option>
+					</c:if>	
 					<c:forEach items="${large}" var="name">
 						<option>${name.ci_large}</option>	
 					</c:forEach>
@@ -265,7 +272,7 @@
 		</div>
 		<div class="form-group">
 			<label>소개글</label>
-			<textarea id="summernote" name="pf_text" class="form-control" rows="10"></textarea>
+			<textarea id="summernote" name="pf_text" class="form-control" rows="10">${profile.pf_text }</textarea>
 		</div>
 		<button class="btn btn-outline-success col-12">등록</button>
 	</form>

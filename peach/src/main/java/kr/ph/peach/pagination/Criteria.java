@@ -9,21 +9,21 @@ public class Criteria {
 	private String type;//검색 타입
 	private String search;//검색어
 	private int bt_num; //게시판타입번호
-	
+
 	public Criteria() {
 		page = 1;
-		perPageNum = 24;
+		perPageNum = 20;
 		type="0";//전체 검색
 		search="";
 	}
-	
+
 	public Criteria(int page, int perPageNum) {
 		this.page = page;
 		this.perPageNum = perPageNum;
 		type="0";
 		search="";
 	}
-	//게시글 리스트에서 현재 페이지에 맞는 게시글을 가져오기 위한 시작 번지 
+	//게시글 리스트에서 현재 페이지에 맞는 게시글을 가져오기 위한 시작 번지
 	public int getPageStart() {
 		return (page - 1) * perPageNum;
 	}

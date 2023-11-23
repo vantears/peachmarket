@@ -29,5 +29,5 @@ public interface ChatService {
 
 	ChatVO selectChat(int ch_num);
 
-	
+
 }

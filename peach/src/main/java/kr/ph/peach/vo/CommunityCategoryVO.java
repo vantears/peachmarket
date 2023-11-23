@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommunityCategoryVO {
 
-	
+
 	private int cc_num;
 	private String cc_name;
+
 }

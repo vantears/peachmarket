@@ -41,6 +41,7 @@
 		<result property="me_st_num" column="me_st_num" />
 		<result property="me_ci_num" column="me_ci_num" />
 		<result property="me_bk_name" column="me_bk_name" />
+		<result property="me_social" column="me_social" />
 		<collection property="cityVO"
 			ofType="kr.ph.peach.vo.CityVO" column="me_ci_num"
 			select="selectCityList" />
@@ -51,11 +52,6 @@
 			ofType="kr.ph.peach.vo.BankVO" column="me_bk_name"
 			select="selectBankList" />
 	</resultMap>
-
-
-	<!-- <collection property="saleBoardVO" ofType="kr.ph.peach.vo.SaleBoardVO" 
-		column="wi_sb_num" select="selectsaleBoardWishList" /> -->
-
 
 	<insert id="insertMember" useGeneratedKeys="true" keyProperty="member.me_num">
 		insert into
@@ -74,6 +70,9 @@
 	</select>
 	<select id="selectMemberByAcc" resultType="MemberVO">
 		select * from member where me_acc= #{acc}
+	</select>
+	<select id="selectMemberByName" resultType="MemberVO">
+		select * from member where me_name= #{name}
 	</select>
 	<update id="updateMemberSession">
 		update
@@ -201,6 +200,26 @@
 		resultType="kr.ph.peach.vo.StatementVO">
 		select * from statement
 	</select>
+
+
+	<select id="memberIdFind"  resultType="MemberVO">
+	<![CDATA[
+	    select
+	        *
+	    from
+	        member
+	    where
+	        me_name = #{me_name}
+	    and
+	        me_phone = #{me_phone}
+	]]>    
+	</select>
+	
+	<insert id="insertAuthCode">
+	    insert into auth_code (au_num, au_code, au_time)
+	    values (#{au_num}, #{au_code}, DATE_ADD(NOW(), INTERVAL 5 MINUTE))
+	</insert>
+  
 	<update id="updateState">
 		update member set me_st_num = #{me_st_num} where
 		me_num = #{me_num}
@@ -208,4 +227,58 @@
 	<select id="selectCity" resultType="kr.ph.peach.vo.CityVO">
 		select * from city where ci_num = #{me_ci_num}
 	</select>
+	<update id="addPoints">
+		update member set me_point = me_point + #{paidAmount} where me_num = #{me_num}
+	</update>
+	<insert id="addPointHistory">
+		insert into point_history(ph_me_num, ph_point, ph_date, ph_info)
+		values(#{me_num}, #{paidAmount}, NOW(), "피치페이 충전")		
+	</insert>
+	<select id="getMemberById" resultType="kr.ph.peach.vo.MemberVO">
+		select * from member where me_num = #{me_num}
+	</select>
+	<select id="selectMemberID" resultMap="MemberVO">
+		select * from member where me_id = #{kakaoname};
+	</select>
+	<insert id="insertMemberForKakao" useGeneratedKeys="true" keyProperty="member.me_num">
+		insert into
+			member(me_id, me_pw, me_name, me_acc, me_phone, me_nick, me_ci_num, me_bk_name,me_social)
+			values(#{member.me_id},#{member.me_pw},#{member.me_name},#{member.me_acc},#{member.me_phone},#{member.me_nick},#{member.me_ci_num},#{member.me_bk_name},#{member.me_social})
+	</insert>
+			<select id="checkcode" resultType="int">
+		select count(*) from auth_code where au_num = #{num} and au_code = #{code} and au_time > now() 
+	</select>
+	
+	<update id="pwUpdate">
+    update member set me_pw = #{hashedPw} where me_num = (
+        select me_num from auth_code where au_code = #{code}
+    )
+	</update>
+		
+	<select id="getMemberByCode" resultType="MemberVO">
+    SELECT me_pw FROM member join auth_code on me_num = au_num WHERE au_code = #{code} LIMIT 1
+	</select>
+	
+	<select id="getMemberLists" resultType="MemberVO">
+		select * from member
+	</select>	
+	<insert id="reducePointHistory">
+		insert into point_history(ph_me_num, ph_point, ph_date, ph_info)
+		values(#{me_num}, -#{pp_point}, NOW(), "구매 신청")	
+	</insert>
+	<insert id="deleteReducePointHistory">
+		INSERT INTO point_history (ph_me_num, ph_point, ph_date, ph_info)
+		VALUES (
+		    (SELECT tq_me_num FROM trading_request WHERE tq_num = #{tq_num}),
+		    (SELECT sb_price FROM sale_board WHERE sb_num = (SELECT tq_sb_num FROM trading_request WHERE tq_num = #{tq_num})),
+		    NOW(),
+		    '거래 거절'
+		);
+	</insert>
+	<update id="deleteMember">
+		update member 
+		set me_id = #{member.me_num}, me_name= #{member.me_num},
+		me_phone =#{member.me_num} , me_nick = #{member.me_num}
+		where me_id = #{member.me_id};
+	</update>
 </mapper>

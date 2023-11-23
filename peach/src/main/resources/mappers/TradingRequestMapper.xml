@@ -3,6 +3,13 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ph.peach.dao.TradingRequestDAO">
+	<resultMap type="kr.ph.peach.vo.TradeMessageVO" id="TradeMessageVO">
+		<id property="tm_num" column="tm_num"/>
+		<result property="tm_info" column="tm_info"/>
+		<result property="tm_date" column="tm_date"/>
+		<result property="tm_sb_num" column="tm_sb_num"/>
+		<result property="tm_me_num" column="tm_me_num"/>
+	</resultMap>
 	<resultMap type="kr.ph.peach.vo.MemberVO" id="MemberVO">
 		<id property="me_num" column="me_num"/>
 		<result property="me_id" column="me_id"/>
@@ -39,17 +46,20 @@
 		<result property="tq_sb_num" column="tq_sb_num"/>
 		<result property="tq_me_num" column="tq_me_num"/>
 		<result property="tq_as_num" column="tq_as_num"/>
+		<result property="tq_trade_type" column="tq_trade_type"/>
 		<collection property="saleBoardVO" resultMap="SaleBoardVO" column="tq_sb_num"/>
 		<collection property="memberVO" resultMap="MemberVO" column="tq_me_num"/>
 		<collection property="saleCategoryVO" ofType="kr.ph.peach.vo.SaleCategoryVO" column="sb_sc_num" select="saleCategoryProduction"/>
 		<collection property="tradingVO" ofType="kr.ph.peach.vo.TradingVO" column="tq_num" select="tradingState"/>
+		<!-- <collection property="tradeMessageVO" ofType="kr.ph.peach.vo.TradeMessageVO" column="tq_me_num" select="getMessageList"/> -->
+		<collection property="tradeMessageVO" resultMap="TradeMessageVO" column="tq_me_num"/>
 	</resultMap>
 	<select id="selectSaleBoardMember" resultType="kr.ph.peach.vo.MemberVO">
 		select * from member where me_num = #{sb_me_num}
 	</select>
 	<insert id="tradePost">	
-		insert into trading_request(tq_sb_num, tq_me_num) 
-		values(#{tq_sb_num}, #{tq_me_num});
+		insert into trading_request(tq_sb_num, tq_me_num, tq_trade_type) 
+		values(#{tq_sb_num}, #{tq_me_num}, 1);
 	</insert>
 	<select id="getTradingRequest" resultMap="TradingRequestVO">
 		select * from trading_request join sale_board on tq_sb_num = sb_num join member on tq_me_num = me_num where sb_me_num = #{user.me_num} and tq_as_num = 1;
@@ -75,6 +85,11 @@
 	<select id="getTradingRequests" resultMap="TradingRequestVO">
 		select * from trading_request where tq_num = #{tq_num}
 	</select>
+	<insert id="getTradingRequestPeach">
+		insert into trading_request(tq_sb_num, tq_me_num, tq_trade_type) 
+		values(#{sb_num}, #{user.me_num}, 2);
+	</insert>
+
 	<update id="changeTradingState">
 		update trading_request join sale_board on tq_sb_num = sb_num
 		set tq_as_num = 2 ,sb_ss_num = 2 WHERE tq_num = #{tq_num};
@@ -91,9 +106,45 @@
 	<update id="changeTradingCuState">
 		update trading_request join trading on tq_num = tr_tq_num
 		set tr_cu = 2 where tq_num = #{tq_num};
+
+	</update>
+	<update id="changeTradingCuStateCancel">
+		update trading_request join trading on tq_num = tr_tq_num
+		set tr_cu = 1 where tq_num = #{tq_num};
 	</update>
 	<update id="changeTradingSeState">
 		update trading_request join trading on tq_num = tr_tq_num
 		set tr_se = 2 where tq_num = #{tq_num};
 	</update>
+	<update id="changeTradingSeStateCancel">
+		update trading_request join trading on tq_num = tr_tq_num
+		set tr_se = 1 where tq_num = #{tq_num};
+	</update>
+	<update id="reducePoint">
+		update member set me_point = #{me_point} where me_num = #{me_num};
+	</update>
+	<update id="addPointToCustomer">
+		update trading_request join member on tq_me_num = me_num join sale_board on tq_sb_num = sb_num 
+		set me_point =  me_point + sb_price where tq_num = #{tq_num} and tq_trade_type = 2
+	</update>
+	<update id="reducePointToCustomer">
+		update trading_request join member on tq_me_num = me_num join sale_board on tq_sb_num = sb_num 
+		set me_point =  me_point - sb_price where tq_num = #{tq_num} and tq_trade_type = 2
+	</update>
+	<update id="changeTrTqState">
+		update trading_request join trading on tq_num = tr_tq_num
+		set tr_ts_state = '거래완료' where tq_num = #{tq_num} and tr_se = 2 and tr_cu = 2;
+	</update>	
+	<select id="getTradingRequestThat" resultMap="TradingRequestVO">
+		select * from trading_request where tq_num = #{tq_num}
+	</select>
+		<select id="getTradingNowList" resultMap="TradingRequestVO">
+		select * from trading_request join sale_board on tq_sb_num = sb_num;
+	</select>
+	<delete id="deleteTradeReportNum">
+		delete from trading_request where tq_sb_num = #{rp_key}
+	</delete>
+	<select id="getMessageList" resultMap="TradeMessageVO">
+		select * from trade_message where tm_me_num = #{tq_me_num}
+	</select>
 </mapper>

@@ -59,11 +59,16 @@
 									<c:forEach items="${wishList }" var="wish">
 										<ul class="shopping-list">
 											<li><a href="javascript:void(0)" class="remove"
-												title="Remove this item"><i class="lni lni-close"></i></a>
+												title="Remove this item" onclick="deleteWish(${wish.saleBoardVO.sb_num})">X</a>
 												<div class="cart-img-head">
-													<a class="cart-img" href="javascript:void(0)"><img
-														src="<c:url value='/img/${pr.saleImageVOList.size() != 0 ? pr.saleImageVOList.get(0).si_name :\"\" }'/>"
-														alt="#"></a>
+													<a class="cart-img" href="javascript:void(0)">
+														<c:if test="${wish.saleBoardVO.saleImageVOList.size() != 0 }">
+															<img class="wish-image" src="<c:url value='/resources/image/${wish.saleBoardVO.saleImageVOList.get(0).si_thb_name}'/>" alt="">
+														</c:if>
+														<c:if test="${wish.saleBoardVO.saleImageVOList.size() == 0 }">
+															<img src="<c:url value='/resources/image/NoMainImage.png'/>" alt="">
+														</c:if>
+													</a>
 												</div>
 												<div class="content">
 													<h4>
@@ -72,7 +77,7 @@
 															${wish.saleBoardVO.sb_name }</a>
 													</h4>
 													<p class="quantity">
-														<span class="amount">${wish.saleBoardVO.sb_price }</span>
+														<span class="amount">${wish.saleBoardVO.get_sb_price() } 원</span>
 													</p>
 												</div></li>
 										</ul>
@@ -223,25 +228,27 @@
 		text-decoration: none;
 		color: #000;
 	}
+	.wish-image {
+		width: 80px;
+		height: 80px;
+	}
 </style>
 
 <script type="text/javascript">
 		
-		
-		$('.wish').click(function(){
-			console.log(1)
+		function deleteWish(wi_sb_num){
+			console.log('1');
 			let data = {
 				wi_me_num : '${user.me_num}',
-				wi_sb_num : '${board.sb_num}',
+				wi_sb_num : wi_sb_num,
 			};
 			ajaxJsonToJson(false, 'post', '/saleboard/wish', data, (data)=>{
+				console.log(data);
 				if(data.isWish == 0){
 					alert('찜을 취소하였습니다.');		
 				}
-				diplayWishBtn(data.isWish);
-				$('.wish-text').text("찜 " + data.board.sb_wish);
 			})
-		})
+		}
 		function diplayWishBtn(isWish){
 			
 				$('.wish-type').text("찜취소");

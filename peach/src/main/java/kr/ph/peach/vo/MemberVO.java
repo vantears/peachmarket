@@ -14,16 +14,16 @@ import lombok.NoArgsConstructor;
 public class MemberVO {
 	private int me_num, me_sugar, me_st_num, me_ci_num, me_point;
 	private String me_id, me_pw, me_name, me_acc, me_phone, me_nick, me_au, me_date, me_bk_name, me_city_name;
-	
+	private String me_social;
 	private String me_session_id;
 	private Date me_session_limit;
-	
+
 	private CityVO cityVO;
 	private StatementVO statementVO;
 	private BankVO bankVO;
-	
+
 	private boolean autoLogin;
-	
+
 	@JsonIgnore
 	public String getme_date_str() {
 		if(me_date == null) {

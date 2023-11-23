@@ -7,6 +7,126 @@
     <title>Trade Page</title>
 </head>
 	<style>
+		/*오류처리*/
+		.empty-space{
+			height: 300px;
+		}
+        .message-container {
+        	width: 100%;
+			height: 800px;
+           text-align: center;
+           padding: 20px;
+        }
+        .no-items-img{
+        	flex: 0 0 196px;
+        }
+        .no-items-message {
+        	
+            font-size: 20px;
+            color: #555;
+            margin: 10px 0;
+        }
+		/*신고모달*/
+		.custom-modal {
+		  display: none;
+		  position: fixed;
+		  z-index: 1;
+		  left: 0;
+		  top: 0;
+		  width: 100%;
+		  height: 100%;
+		  overflow: auto;
+		  background-color: rgba(0, 0, 0, 0.4);
+		}
+		
+		.custom-modal .modal-content {
+		  background-color: rgb(247, 247, 247);
+		  margin: 15% auto;
+		  border: 1px solid #888;
+		  width: 420px;
+		  padding: 20px;
+		  text-align: center;
+		  border-radius: 8px;
+		  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+		}
+		
+		.custom-modal .modal-header h2 {
+		  font-size: 24px;
+		  font-weight: bold;
+		}
+		
+		.custom-modal .report-reason {
+		  width: 100%;
+		  padding: 10px;
+		  border: 1px solid #ccc;
+		  border-radius: 4px;
+		  resize: none;
+		  height: 200px;
+		}
+		
+		.custom-modal .report-button,
+		.custom-modal .cancel-button {
+		  padding: 10px 20px;
+		  font-size: 16px;
+		  cursor: pointer;
+		  border: none;
+		  border-radius: 5px;
+		  margin-right: 10px;
+		}
+		
+		.custom-modal .report-button {
+		  background-color: #ff5733;
+		  color: white;
+		}
+		
+		.custom-modal .report-button:hover {
+		  background-color: #ff4500;
+		}
+		
+		.custom-modal .cancel-button {
+		  background-color: #ccc;
+		  color: #333;
+		}
+		
+		.custom-modal .cancel-button:hover {
+		  background-color: #999;
+		}
+		
+		.custom-modal .close {
+		  position: absolute;
+		  top: 10px;
+		  right: 10px;
+		  cursor: pointer;
+		  font-size: 24px;
+		}
+		
+		.custom-modal .close:hover,
+		.custom-modal .close:focus {
+		  color: black;
+		  text-decoration: none;
+		  cursor: pointer;
+		}
+		.report-text-area {
+			text-align: left;
+			margin-top: 20px;
+		}
+		.maxtext {
+			color: grey;
+			font-size: 13px;
+		}
+		.report-post {
+			background-color: #ff5733; /* Choose your desired background color */
+			color: white;
+			border: none;
+			padding: 10px 20px; /* Adjust padding as needed */
+			font-size: 14px;
+			cursor: pointer;
+			border-radius: 5px; /* Rounded corners for the button */
+		}
+		.report-post:hover {
+			background-color: #ff4500; /* Change the background color on hover */
+		}
+
 		.modal {
 		  display: none;
 		  position: fixed;
@@ -123,6 +243,7 @@
 			color: black;
 			width: 900px;
 			margin: auto;
+			margin-top: 30px;
 			
 		}
 		.image-box {
@@ -175,15 +296,14 @@
 			margin-bottom: 12px;
 			display: flex;
 			justify-content: space-between;
-			border-bottom: 1px solid #e9ecef;
 		}
 		.content-box {
 			padding: 20px 0;
 			margin: 0 auto;
+			border-top: 1px solid #e9ecef;
 			border-bottom: 1px solid #e9ecef;
 		}
 		.title {
-			margin-top: 10px;
 			font-size: 20px;
 			font-weight: 600;
 			line-height: 1.5;
@@ -323,7 +443,12 @@
 <body>
 <c:choose>
     <c:when test="${empty trList}">
-        <h3>잘못된 접근입니다.</h3>
+	    <div class="message-container">
+     		<div class="empty-space">
+     		</div>
+     		<img class="no-items-img" width="100px" height="100px" src="<c:url value='/img/RESISTX.gif'/>">
+         	<p class="no-items-message">잘못된 접근입니다.</p>
+     	</div>
     </c:when>
     <c:otherwise>
 		<c:forEach items="${trList}" var="tr">
@@ -345,18 +470,27 @@
 				<div class="profile-box">
 					<div class="profile-left">
 						<img src="" class="profile-thumnail">
-						<div class="profile-name">${tr.saleBoardVO.sb_me_nickname}</div>
+						<c:if test="${tr.tradingVO.tr_se == 1 }">
+						<div class="profile-name" style="font-size: 14px; text-align: center; color: grey;">인계대기중</div>
+						</c:if>
+						<c:if test="${tr.tradingVO.tr_se == 2 }">
+						<div class="profile-name" style="font-size: 14px; text-align: center;">인계완료</div>
+						</c:if>
+						<div class="profile-name" style="font-size: 18px;">판매자 : ${tr.saleBoardVO.memberVO.me_nick}</div>
 					</div>
 					<div class="profile-right">
 						<div class="profile-right-box">
-							<span class="profile-sweetness-text">당도</span>
-							<span class="profile-sweetness">${tr.saleBoardVO.sb_me_sugar}</span>
+							<c:if test="${tr.tradingVO.tr_cu == 1 }">
+							<div class="profile-name" style="font-size: 14px; text-align: center; color: grey;">인수대기중</div>
+							</c:if>
+							<c:if test="${tr.tradingVO.tr_cu == 2 }">
+							<div class="profile-name" style="font-size: 14px; text-align: center;">인수완료</div>
+							</c:if>
+							<span class="profile-sweetness" style="font-size: 18px;">구매자 : ${tr.memberVO.me_nick}</span>
 						</div>
 					</div>
 				</div>
 				<div class="content-box">
-					<p class="title">판매자: ${tr.saleBoardVO.memberVO.me_name}</p>
-					<p class="title">구매자: ${tr.memberVO.me_name}</p>
 					<p class="title">${tr.saleBoardVO.sb_name}</p>
 					<p class="category-date">${tr.saleCategoryVO.sc_name} | ${tr.saleBoardVO.sb_date}</p>
 					<p class="price">${tr.saleBoardVO.sb_price}</p>
@@ -365,19 +499,33 @@
 				<div class="button-box">
 					<c:choose>
 						<c:when test="${user.me_num == tr.tq_me_num && tr.tradingVO.tr_cu == 1}">
-							<button type="button" onClick="location.href='<c:url value='/saleboard/update?sb_num=${board.sb_num }'/>'" class="chat">피치톡</button>
+							<button type="button" onClick="location.href='<c:url value='/chat/chat?sb_num=${tr.saleBoardVO.sb_num}'/>'" class="chat">피치톡</button>
 							<button id="underTake" type="button" class="pay" data-tq-num="${tr.tq_num}">인수완료</button>
-							<button type="button" onClick="location.href='<c:url value='/saleboard/delete?sb_num=${board.sb_num }'/>'" class="cancel">거래취소요청</button>
+							<button type="button" class="report-post" id="openReportModalBtn">거래취소 요청</button>
 						</c:when>
 						<c:otherwise>
 							<c:choose>
 								<c:when test="${user.me_num == tr.saleBoardVO.sb_me_num && tr.tradingVO.tr_se == 1}">
-									<button type="button" onClick="location.href='<c:url value='/saleboard/update?sb_num=${board.sb_num }'/>'" class="chat">피치톡</button>
+									<button type="button" onClick="location.href='<c:url value='/chat/chat?sb_num=0'/>'" class="chat">피치톡</button>
 									<button id="giveItem" type="button" class="pay" data-tq-num="${tr.tq_num}">인계완료</button>
-									<button type="button" onClick="location.href='<c:url value='/saleboard/delete?sb_num=${board.sb_num }'/>'" class="cancel">거래취소요청</button>
+									<button type="button" class="cancel" id="openReportModalBtn">거래취소 요청</button>
 								</c:when>
 								<c:otherwise>
-									<p>상대방이 인수/인계를 완료를 기다리는 중입니다.</p>
+									<c:choose>
+										<c:when test="${tr.tradingVO.tr_cu == 2 && tr.tradingVO.tr_se == 2}">
+											<p>거래가 완료되었습니다.</p>
+										</c:when>
+										<c:otherwise>																						
+											<c:choose>
+												<c:when test="${user.me_num == tr.tq_me_num && tr.tradingVO.tr_cu == 2}">
+													<p>인수가 완료되었습니다. 상대방이 인계를 완료하면 거래가 종료됩니다.</p>
+												</c:when>
+												<c:otherwise>
+													<p>인계가 완료되었습니다. 상대방이 인수를 완료하면 거래가 종료됩니다.</p>
+												</c:otherwise>
+											</c:choose>
+										</c:otherwise>
+									</c:choose>
 								</c:otherwise>
 							</c:choose>
 						</c:otherwise>	
@@ -387,55 +535,222 @@
 		</c:forEach>
 	</c:otherwise>
 </c:choose>
+					<div id="reportPostModal" class="custom-modal">
+						  <div class="modal-content">
+						    <span class="close">&times;</span>
+						    <div class="modal-header">
+						      <h2>거래취소 요청</h2>
+						    </div>
+						    <div class="modal-body">
+						      <p>거래취소 요청 사유를 작성해주세요.</p>
+						      <p>최대한 자세하게 기재해주셔야 원활한 취소 처리가 가능합니다.</p>
+						      <div class="report-text-area">
+							      <p class="maxtext">* 최대 500자 제한</p>
+							      <textarea id="reportReason" class="report-reason" placeholder="거래취소 요청 사유를 입력하세요" maxlength="500"></textarea>						      
+						      </div>
+						    </div>
+						    <div class="modal-footer">
+						      <button class="report-button" onclick="reportPost()">거래취소 요청</button>
+						      <button class="cancel-button" onclick="closeReportModal()">취소</button>
+						    </div>
+						  </div>
+						</div>
 </body>
 <script>
-$(document).ready(function(){
-    $("#underTake").click(function(){
-    	var tq_num = $(this).data('tq-num');
-        $.ajax({
-            method: "POST", // 요청 방식 (GET, POST 등)
-            url: '<c:url value="/sale/undertake"/>', // 서버 엔드포인트 URL
-            data: {tq_num: tq_num},
-            dataType: 'json',
-            success: function(map) {
-                // 성공 시 실행될 코드
-                console.log("요청 성공", map);
-                // 여기서 성공 시 할 작업을 수행
-                alert("제품 인수를 완료하였습니다");
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                // 오류 발생 시 실행될 코드
-                console.log("요청 오류", error);
-                // 여기서 오류 시 할 작업을 수행
-            }
-        });
-    });
-});
+	//인수 확인
+	$(document).ready(function(){
+	    $("#underTake").click(function(){
+	        var tq_num = $(this).data('tq-num');
+	
+	        // 확인창 보이기
+	        var confirmUndertake = confirm("제품 인수를 완료하시겠습니까?");
+	        
+	        if (confirmUndertake) {
+	            $.ajax({
+	                method: "POST", // 요청 방식 (GET, POST 등)
+	                url: '<c:url value="/sale/undertake"/>', // 서버 엔드포인트 URL
+	                data: {tq_num: tq_num},
+	                dataType: 'json',
+	                success: function(map) {
+	                    // 성공 시 실행될 코드
+	                    console.log("요청 성공", map);
+	                    // 여기서 성공 시 할 작업을 수행
+	                    alert("제품 인수를 완료하였습니다");
+	                    location.reload();
+	                },
+	                error: function(xhr, status, error1) {
+	                    // 오류 발생 시 실행될 코드
+	                    console.log(xhr);
+	                    // 여기서 오류 시 할 작업을 수행
+	                }
+	            });
+	        } else {
+	            // 사용자가 "아니요"를 선택한 경우
+	            // 아무 동작 없이 그냥 종료
+	        }
+	    });
+	});
+	//인수 취소
+	$(document).ready(function(){
+	    $("#underTakeCancel").click(function(){
+	        var tq_num = $(this).data('tq-num');
+	
+	        // 확인창 보이기
+	        var confirmUndertake = confirm("제품 인수를 취소하시겠습니까?");
+	        
+	        if (confirmUndertake) {
+	            $.ajax({
+	                method: "POST", // 요청 방식 (GET, POST 등)
+	                url: '<c:url value="/sale/undertakeCancel"/>', // 서버 엔드포인트 URL
+	                data: {tq_num: tq_num},
+	                dataType: 'json',
+	                success: function(map) {
+	                    // 성공 시 실행될 코드
+	                    console.log("요청 성공", map);
+	                    // 여기서 성공 시 할 작업을 수행
+	                    alert("제품 인수를 취소하였습니다");
+	                    location.reload();
+	                },
+	                error: function(xhr, status, error) {
+	                    // 오류 발생 시 실행될 코드
+	                    console.log("요청 오류", error);
+	                    // 여기서 오류 시 할 작업을 수행
+	                }
+	            });
+	        } else {
+	            // 사용자가 "아니요"를 선택한 경우
+	            // 아무 동작 없이 그냥 종료
+	        }
+	    });
+	});
+	//인계 완료
+	$(document).ready(function(){
+	    $("#giveItem").click(function(){
+	        var tq_num = $(this).data('tq-num');
+	
+	        // 확인창 보이기
+	        var confirmGiveItem = confirm("제품 인계를 완료하시겠습니까?");
+	
+	        if (confirmGiveItem) {
+	            $.ajax({
+	                method: "POST", // 요청 방식 (GET, POST 등)
+	                url: '<c:url value="/sale/giveitem"/>', // 서버 엔드포인트 URL
+	                data: {tq_num: tq_num},
+	                dataType: 'json',
+	                success: function(map) {
+	                    // 성공 시 실행될 코드
+	                    console.log("요청 성공", map);
+	                    // 여기서 성공 시 할 작업을 수행
+	                    alert("제품 인계를 완료하였습니다");
+	                    location.reload();
+	                },
+	                error: function(xhr, status, error) {
+	                    // 오류 발생 시 실행될 코드
+	                    console.log("요청 오류", error);
+	                    // 여기서 오류 시 할 작업을 수행
+	                }
+	            });
+	        } else {
+	            // 사용자가 "아니요"를 선택한 경우
+	            // 아무 동작 없이 그냥 종료
+	        }
+	    });
+	});
+	//인계 취소
+	$(document).ready(function(){
+	    $("#giveItemCancel").click(function(){
+	        var tq_num = $(this).data('tq-num');
+	
+	        // 확인창 보이기
+	        var confirmGiveItem = confirm("제품 인계를 취소하시겠습니까?");
+	
+	        if (confirmGiveItem) {
+	            $.ajax({
+	                method: "POST", // 요청 방식 (GET, POST 등)
+	                url: '<c:url value="/sale/giveitemCancel"/>', // 서버 엔드포인트 URL
+	                data: {tq_num: tq_num},
+	                dataType: 'json',
+	                success: function(map) {
+	                    // 성공 시 실행될 코드
+	                    console.log("요청 성공", map);
+	                    // 여기서 성공 시 할 작업을 수행
+	                    alert("제품 인계를 취소하였습니다");
+	                    location.reload();
+	                },
+	                error: function(xhr, status, error) {
+	                    // 오류 발생 시 실행될 코드
+	                    console.log("요청 오류", error);
+	                    // 여기서 오류 시 할 작업을 수행
+	                }
+	            });
+	        } else {
+	            // 사용자가 "아니요"를 선택한 경우
+	            // 아무 동작 없이 그냥 종료
+	        }
+	    });
+	});
+	
+	// 신고 모달
+	const reportPostModal = document.getElementById("reportPostModal");
+	const openReportModalBtn = document.getElementById("openReportModalBtn");
+	const closeReportModalBtn = document.querySelector(".custom-modal .close");
+	
+	openReportModalBtn.addEventListener("click", function () {
+		if('${user.me_id}' == '') {
+			//alert('로그인한 회원만 이용이 가능합니다.');
+			if(confirm('로그인하시겠습니까?')){
+				location.href = '<c:url value="/member/login"/>'
+			}
+			return;
+		}
+	  	reportPostModal.style.display = "block";
+	});
+	
+	closeReportModalBtn.addEventListener("click", function () {
+	  reportPostModal.style.display = "none";
+	});		
+	
+	window.addEventListener("click", function (event) {
+	  if (event.target === reportPostModal) {
+	    reportPostModal.style.display = "none";
+	  }
+	});
 
-$(document).ready(function(){
-    $("#giveItem").click(function(){
-    	var tq_num = $(this).data('tq-num');
-        $.ajax({
-            method: "POST", // 요청 방식 (GET, POST 등)
-            url: '<c:url value="/sale/giveitem"/>', // 서버 엔드포인트 URL
-            data: {tq_num: tq_num},
-            dataType: 'json',
-            success: function(map) {
-                // 성공 시 실행될 코드
-                console.log("요청 성공", map);
-                // 여기서 성공 시 할 작업을 수행
-                alert("제품 인계를 완료하였습니다");
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                // 오류 발생 시 실행될 코드
-                console.log("요청 오류", error);
-                // 여기서 오류 시 할 작업을 수행
-            }
-        });
-    });
-});
-
+	function reportPost() {
+		
+		const reportReason = document.getElementById("reportReason").value;
+	
+	  	if (reportReason.trim() === "") {
+	   		alert("취소 사유를 입력하세요.");
+	   		return;
+		}
+	  	
+		let data = {
+			rp_key : '${trList.get(0).tq_sb_num}',
+			rp_info : reportReason,
+			rp_table : '3'
+		};
+		ajaxJsonToJson(
+				  false,
+				  'post',
+				  'report',
+				  data,
+				  (data) => {
+				    alert("거래취소 요청을 완료했습니다.\n취소 사유: " + reportReason);
+				    console.log(data.msg);
+				    document.getElementById("reportReason").value = '';
+				    closeReportModal(); // Close the modal after reporting
+				  },
+				    () => {
+				    	
+				    	console.log("실패");
+				    }
+				);
+		}
+		
+	// Function to close the modal
+	function closeReportModal() {
+	  reportPostModal.style.display = "none";
+	}
 </script>
 </html>

@@ -66,7 +66,7 @@ public class ChatEmitter {
     public SseEmitter get(Integer userId) {
         return emitters.get(userId);
     }
-    
+
     // 모든 emitter 검색
     public ConcurrentHashMap<Integer, SseEmitter> getEmitters() {
         return emitters;
@@ -89,7 +89,7 @@ public class ChatEmitter {
             }
         });
     }
-    
+
     // 방에서 읽은 메시지를 모든 사용자에게 전송
     public void read(Integer roomId) {
         emitters.forEach((userId, userEmitter) -> {

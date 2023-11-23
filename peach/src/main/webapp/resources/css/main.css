@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*======================================
     Variables
 ========================================*/
@@ -90,9 +91,6 @@ span,
 a {
   display: inline-block;
   text-decoration: none;
-  transition: all 0.4s ease;
-  -webkit-transition: all 0.4s ease;
-  -moz-transition: all 0.4s ease;
 }
 
 audio,
@@ -2305,17 +2303,18 @@ top: -1px;
 }
 
 .header .mega-category-menu {
-  position: relative;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  border-right: 1px solid #eee;
-  margin-right: 40px;
-  padding-right: 112px;
-  cursor: pointer;
+	position: relative;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	margin-right: 20px;
+	padding-right: 15px;
+	border: none;
+  	cursor: pointer;
+  
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
@@ -2572,7 +2571,7 @@ top: 2px;
 }
 
 .header .navbar .navbar-nav .nav-item a.active {
-  color: #0167F3;
+  color: #000;
 }
 
 .sticky .navbar .navbar-nav .nav-item a.active {

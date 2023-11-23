@@ -14,6 +14,28 @@
 	.qwe{
 		font-weight: bold;
 	}
+	.submitBtn {
+		width: 60px;
+		height: 35px;
+		box-shadow:none; 
+		border-radius:5px; 
+		padding:0; 
+		overflow:visible; 
+		cursor:pointer;
+		background: #f76076;
+		border: 1px solid #f76076;
+		color: #fff;
+	}
+	.form-control {
+		width: 250px;
+		height: 35px;
+		margin-right: 10px;
+	}
+	.password-box {
+		display:flex;
+		justify-content: center;
+		margin-bottom: 20px;
+	}
 </style>
 	<title>프로필 관리 접속시, 비밀번호 요구</title>
 </head>
@@ -25,18 +47,17 @@
 						<br>
 						<br>
 						<br>
-						<h1 class="qwe">비밀번호 확인</h1>
+						<h1 class="qwe">개인정보 수정</h1>
 						<br>
 						<br>
 						<br>
 						<form action="<c:url value='/board/profilePass?pi_num=${pi_num}'/>" method="post">
-							<div class="form-group">
-								<h3>아이디 : ${user.me_id}</h3>
-							</div>
+							<label for="Ppassword">비밀번호 재확인</label>
 							<br>
-							<label for="Ppassword">비밀번호:</label>
-    						<input type="password" id="Ppassword" name="Ppassword">
-    						<input type="submit" value="로그인">
+							<div class="password-box">
+	    						<input type="password" class="form-control" id="Ppassword" name="Ppassword">
+	    						<input class="submitBtn" type="submit" value="확인">							
+							</div>
 						</form>
 					</div>
 				</div>
